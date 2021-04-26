@@ -72,9 +72,6 @@ Integer operator+(const Integer& n1, const Integer& n2)
         swap(num1, num2);
         swap(num1_len, num2_len);
     }
-    
-    reverse(num1.begin(), num1.end());
-    reverse(num2.begin(), num2.end());
 
     int carry = 0;
     for (int i = 0; i < num2_len; i++) {
