@@ -9,11 +9,13 @@ using namespace std;
 Integer::Integer()
 {
 	point_index = 0;
+	positive = 1;
 }
 Integer::Integer(const Integer& reference)
 {
 	number = reference.number;
 	point_index = reference.point_index;
+	positive = reference.positive;
 }
 Integer operator*(const Integer &A, const Integer &B)
 {
