@@ -21,6 +21,7 @@ public:
 	//variable
 	//function
 	Integer();
+	Integer(const Integer& reference);
 	Integer(const string a_string);//example: BigNumber A="3*1+2";
 	friend iostream& operator>>(iostream&, Integer&);
 	friend iostream& operator<<(iostream&, Integer&);
@@ -42,6 +43,7 @@ public:
 	//variable
 	//function
 	Decimal();
+	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
 	friend iostream& operator>>(iostream&, Decimal&);
 	friend iostream& operator<<(iostream&, Decimal&);
