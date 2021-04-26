@@ -9,6 +9,7 @@ class NumberObject
 public:
 	//variable
 	string number;
+	int positive;//positive 1,negative -1;
 	int point_index;//index of the point,0 if create by default constructor
 	//function
 	friend iostream& operator>>(iostream&, Integer&);
