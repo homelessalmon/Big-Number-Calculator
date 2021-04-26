@@ -33,6 +33,7 @@ public:
 	Integer operator+();
 	Integer operator-();
 	operator Decimal();
+	Decimal calc_inverse();
 };
 
 class Decimal : public NumberObject
@@ -61,4 +62,5 @@ public:
 	Decimal operator+();
 	Decimal operator-();
 	operator Integer();
+	Decimal calc_inverse();
 };
