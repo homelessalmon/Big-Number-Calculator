@@ -30,6 +30,8 @@ public:
 	friend Integer operator-(const Integer&, const Integer&);
 	friend Integer operator*(const Integer&, const Integer&);
 	friend Integer operator/(const Integer&, const Integer&);
+	Integer operator+();
+	Integer operator-();
 	operator Decimal();
 };
 
@@ -56,5 +58,7 @@ public:
 	friend Decimal operator-(const Decimal&, const Decimal&);
 	friend Decimal operator*(const Decimal&, const Decimal&);
 	friend Decimal operator/(const Decimal&, const Decimal&);
+	Decimal operator+();
+	Decimal operator-();
 	operator Integer();
 };
