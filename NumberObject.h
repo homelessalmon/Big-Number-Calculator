@@ -24,8 +24,6 @@ public:
 	Integer();
 	Integer(const Integer& reference);
 	Integer(const string a_string);//example: BigNumber A="3*1+2";
-	friend iostream& operator>>(iostream&, Integer&);
-	friend iostream& operator<<(iostream&, Integer&);
 	Integer& operator=(const Integer&);
 	friend Integer operator+(const Integer&, const Integer&);
 	friend Integer operator-(const Integer&, const Integer&);
@@ -45,8 +43,6 @@ public:
 	Decimal();
 	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
-	friend iostream& operator>>(iostream&, Decimal&);
-	friend iostream& operator<<(iostream&, Decimal&);
 	Decimal& operator=(const Decimal&);
 	friend Decimal operator+(const Decimal&, const Integer&);
 	friend Decimal operator-(const Decimal&, const Integer&);
