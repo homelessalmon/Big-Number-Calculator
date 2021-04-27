@@ -17,28 +17,22 @@ Integer::Integer(const Integer& reference)
 	point_index = reference.point_index;
 	positive = reference.positive;
 }
+
 Integer operator*(const Integer &num1, const Integer &num2)
 {
     vector<Integer> list_to_plus;
-    vector<int> exceed_plus;
 	for (int i = 0; i < num2.number.length(); i++)
 	{
+        int q = 0;
 		string temp = num1.number;
 		for (int j = 0; j < num1.number.length(); j++)
 		{
-			int buffer = (temp[j] - '0') * (num2[i] - '0');
-			temp[j] = buffer % 10;
-            exceed_plus.push_back(buffer / 10);
-            if (j > 0)
+            int c = ((temp[j] - '0') * (num2.number[i] - '0') + q) % 10;
+            q = ((temp[j] - '0') * (num2.number[i] - '0') + q) / 10;
+            temp[j] = c + '0';
+            if (j == num1.number.length() - 1 && q > 0)
             {
-                temp[j] += exceed_plus[j-1];
-            }
-            if (j == num1.number.length() - 1)
-            {
-                if (exceed_plus[j - 1]!= 0)
-                {
-                    temp.append(1, exceed_plus[j - 1]+'0');
-                }
+                temp.append(1, q + '0');
             }
 		}
         Integer A;
@@ -47,18 +41,20 @@ Integer operator*(const Integer &num1, const Integer &num2)
 	}
     for (int i = 0; i < list_to_plus.size(); i++)
     {
+        string x = "";
         for (int j = 0; j < i; j++)
         {
-            list_to_plus[i].number.append(1, '0');
+            x.append(1, '0');
         }
+        list_to_plus[i].number = x + list_to_plus[i].number;
     }
     Integer re;
-    re.positive = num1.positive * num2.positive;
     re.number = "0";
     for (int i = 0; i < list_to_plus.size(); i++)
     {
         re = re + list_to_plus[i];
     }
+    re.positive = num1.positive * num2.positive;
     return re;
 }
 
