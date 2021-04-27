@@ -13,12 +13,35 @@ iostream& operator<<(iostream &io, NumberObject &num)
 	{
 		if(num.positive > 0)
 		{
-			string::const_iterator p = num.number.end();
+			string temp=num.number;
+			reverse(temp.begin(),temp.end());
+			io<<temp<<endl;
+			return io;
+		}
+		else
+		{
+			string temp=num.number;
+			reverse(temp.begin(),temp.end());
+			io<<"-"<<temp<<endl;
+			return io;
 		}
 	}
 	else
 	{
-		
+		if(num.positive > 0)
+		{
+			int c=
+			string temp=num.number;
+			reverse(temp.begin(),temp.end());
+			for_each(temp.begin(),temp.end(),[](
+			return io;
+		}
+		else
+		{
+			string temp=num.number;
+			reverse(temp.begin(),temp.end());
+			io<<"-"<<temp<<endl;
+			return io;
 	}
 }
 
