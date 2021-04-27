@@ -1,9 +1,26 @@
 #include<vector>
 #include<string>
 #include<iostream>
+#include<algorithm>
+#include<iterator>
 #include"NumberObject.h"
 
 using namespace std;
+//NumberObject
+iostream& operator<<(iostream &io, NumberObject &num)
+{
+	if(num.point_index == 0)
+	{
+		if(num.positive > 0)
+		{
+			string::const_iterator p = num.number.end();
+		}
+	}
+	else
+	{
+		
+	}
+}
 
 //int
 Integer::Integer()
