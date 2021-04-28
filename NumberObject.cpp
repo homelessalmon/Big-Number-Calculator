@@ -30,10 +30,10 @@ iostream& operator<<(iostream &io, NumberObject &num)
 	{
 		if(num.positive > 0)
 		{
-			int c=
 			string temp=num.number;
+			int c=temp.length();
 			reverse(temp.begin(),temp.end());
-			for_each(temp.begin(),temp.end(),[](
+			for_each(temp.begin(),temp.end(),[&c](char n){cout<<n;if(c==){}});
 			return io;
 		}
 		else
