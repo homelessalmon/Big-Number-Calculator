@@ -33,14 +33,16 @@ iostream& operator<<(iostream &io, NumberObject &num)
 			string temp=num.number;
 			int c=temp.length();
 			reverse(temp.begin(),temp.end());
-			for_each(temp.begin(),temp.end(),[&c](char n){cout<<n;if(c==){}});
+			for_each(temp.begin(),temp.end(),[&c](char n){io<<n;c--;if(c==100){io<<".";}});
 			return io;
 		}
 		else
 		{
 			string temp=num.number;
+			int c=temp.length();
 			reverse(temp.begin(),temp.end());
 			io<<"-"<<temp<<endl;
+			for_each(temp.begin(),temp.end(),[&c](char n){io<<n;c--;if(c==100){io<<".";}});
 			return io;
 	}
 }
