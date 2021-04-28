@@ -1,6 +1,7 @@
 #pragma once
 #include<string>
 #include<vector>
+#define TEST 1
 //
 using namespace std;
 //
@@ -12,8 +13,10 @@ public:
 	int positive;//positive 1,negative -1;
 	int point_index;//index of the point,0 if create by default constructor
 	//function
+#if TEST == 0
 	friend iostream& operator>>(iostream&, NumberObject&);
 	friend iostream& operator<<(iostream&, NumberObject&);
+#endif
 };
 
 class Integer : public NumberObject
@@ -24,15 +27,15 @@ public:
 	Integer();
 	Integer(const Integer& reference);
 	Integer(const string a_string);//example: BigNumber A="3*1+2";
-	Integer& operator=(const Integer&);
+	//Integer& operator=(const Integer&);
 	friend Integer operator+(const Integer&, const Integer&);
 	friend Integer operator-(const Integer&, const Integer&);
 	friend Integer operator*(const Integer&, const Integer&);
 	friend Integer operator/(const Integer&, const Integer&);
 	Integer operator+();
 	Integer operator-();
-	operator Decimal();
-	Decimal calc_inverse();
+	//operator Decimal();
+	//Decimal calc_inverse();
 };
 
 class Decimal : public NumberObject
@@ -43,7 +46,7 @@ public:
 	Decimal();
 	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
-	Decimal& operator=(const Decimal&);
+	//Decimal& operator=(const Decimal&);
 	friend Decimal operator+(const Decimal&, const Integer&);
 	friend Decimal operator-(const Decimal&, const Integer&);
 	friend Decimal operator*(const Decimal&, const Integer&);
@@ -58,6 +61,6 @@ public:
 	friend Decimal operator/(const Decimal&, const Decimal&);
 	Decimal operator+();
 	Decimal operator-();
-	operator Integer();
-	Decimal calc_inverse();
+	//operator Integer();
+	//Decimal calc_inverse();
 };
