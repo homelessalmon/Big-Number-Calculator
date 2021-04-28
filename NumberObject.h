@@ -13,9 +13,9 @@ public:
 	int positive;//positive 1,negative -1;
 	int point_index;//index of the point,0 if create by default constructor
 	//function
+	friend ostream& operator<<(ostream&, NumberObject&);
 #if TEST == 0
-	friend iostream& operator>>(iostream&, NumberObject&);
-	friend iostream& operator<<(iostream&, NumberObject&);
+	friend iostream& operator>>(iostream&, NumberObject&)
 #endif
 };
 
@@ -43,7 +43,7 @@ class Decimal : public NumberObject
 public:
 	//variable
 	//function
-	Decimal();
+	Decimal(){ point_index = 1; positive = 1; }
 	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
 	//Decimal& operator=(const Decimal&);
