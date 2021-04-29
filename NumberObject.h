@@ -15,7 +15,7 @@ public:
 	//function
 	friend ostream& operator<<(ostream&, NumberObject&);
 #if TEST == 0
-	friend iostream& operator>>(iostream&, NumberObject&)
+	friend istream& operator>>(istream&, NumberObject&)
 #endif
 };
 
