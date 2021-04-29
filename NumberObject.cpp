@@ -191,6 +191,13 @@ Integer operator-(const Integer& n1, const Integer& n2)
 
 Integer operator*(const Integer &num1, const Integer &num2)
 {
+    if (num1.number == "0" || num2.number == "0")
+    {
+        Integer A;
+        A.number = "0";
+        A.positive = 1;
+        return A;
+    }
     vector<Integer> list_to_plus;
 	for (int i = 0; i < num2.number.length(); i++)
 	{
@@ -354,6 +361,54 @@ Decimal operator-(const Decimal& n1, const Integer& n2)
     return a;
 }
 
+Decimal operator*(const Decimal& num1, const Integer& num2)
+{
+    string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    if (num1.number == zero || num2.number == "0") {
+        Decimal A;
+        A.number = zero;
+        A.positive = 1;
+        return A;
+    }
+    vector<Integer> list_to_plus;
+    for (int i = 0; i < num2.number.length(); i++)
+    {
+        int q = 0;
+        string temp = num1.number;
+        for (int j = 0; j < num1.number.length(); j++)
+        {
+            int c = ((temp[j] - '0') * (num2.number[i] - '0') + q) % 10;
+            q = ((temp[j] - '0') * (num2.number[i] - '0') + q) / 10;
+            temp[j] = c + '0';
+            if (j == num1.number.length() - 1 && q > 0)
+            {
+                temp.append(1, q + '0');
+            }
+        }
+        Integer A;
+        A.number = temp;
+        list_to_plus.push_back(A);
+    }
+    for (int i = 0; i < list_to_plus.size(); i++)
+    {
+        string x = "";
+        for (int j = 0; j < i; j++)
+        {
+            x.append(1, '0');
+        }
+        list_to_plus[i].number = x + list_to_plus[i].number;
+    }
+    Decimal re;
+    re.number = "0";
+    for (int i = 0; i < list_to_plus.size(); i++)
+    {
+        re = re + list_to_plus[i];
+    }
+    re.positive = num1.positive * num2.positive;
+    re.number = re.number.substr(100);
+    return re;
+}
+
 Decimal operator+(const Integer& n1, const Decimal& n2)
 {
     string num1 = n1.number, num2 = n2.number;
@@ -467,6 +522,54 @@ Decimal operator-(const Integer& n1, const Decimal& n2)
     return a;
 }
 
+Decimal operator*(const Integer& num1, const Decimal& num2)
+{
+    string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    if (num1.number == "0" || num2.number == zero) {
+        Decimal A;
+        A.number = zero;
+        A.positive = 1;
+        return A;
+    }
+    vector<Integer> list_to_plus;
+    for (int i = 0; i < num2.number.length(); i++)
+    {
+        int q = 0;
+        string temp = num1.number;
+        for (int j = 0; j < num1.number.length(); j++)
+        {
+            int c = ((temp[j] - '0') * (num2.number[i] - '0') + q) % 10;
+            q = ((temp[j] - '0') * (num2.number[i] - '0') + q) / 10;
+            temp[j] = c + '0';
+            if (j == num1.number.length() - 1 && q > 0)
+            {
+                temp.append(1, q + '0');
+            }
+        }
+        Integer A;
+        A.number = temp;
+        list_to_plus.push_back(A);
+    }
+    for (int i = 0; i < list_to_plus.size(); i++)
+    {
+        string x = "";
+        for (int j = 0; j < i; j++)
+        {
+            x.append(1, '0');
+        }
+        list_to_plus[i].number = x + list_to_plus[i].number;
+    }
+    Decimal re;
+    re.number = "0";
+    for (int i = 0; i < list_to_plus.size(); i++)
+    {
+        re = re + list_to_plus[i];
+    }
+    re.positive = num1.positive * num2.positive;
+    re.number = re.number.substr(100);
+    return re;
+}
+
 Decimal operator+(const Decimal& n1, const Decimal& n2)
 {
     string num1 = n1.number, num2 = n2.number;
@@ -576,4 +679,52 @@ Decimal operator-(const Decimal& n1, const Decimal& n2)
 
     a.number = temp;
     return a;
+}
+
+Decimal operator*(const Decimal& num1, const Decimal& num2)
+{
+    string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    if (num1.number == zero || num2.number == zero) {
+        Decimal A;
+        A.number = zero;
+        A.positive = 1;
+        return A;
+    }
+    vector<Integer> list_to_plus;
+    for (int i = 0; i < num2.number.length(); i++)
+    {
+        int q = 0;
+        string temp = num1.number;
+        for (int j = 0; j < num1.number.length(); j++)
+        {
+            int c = ((temp[j] - '0') * (num2.number[i] - '0') + q) % 10;
+            q = ((temp[j] - '0') * (num2.number[i] - '0') + q) / 10;
+            temp[j] = c + '0';
+            if (j == num1.number.length() - 1 && q > 0)
+            {
+                temp.append(1, q + '0');
+            }
+        }
+        Integer A;
+        A.number = temp;
+        list_to_plus.push_back(A);
+    }
+    for (int i = 0; i < list_to_plus.size(); i++)
+    {
+        string x = "";
+        for (int j = 0; j < i; j++)
+        {
+            x.append(1, '0');
+        }
+        list_to_plus[i].number = x + list_to_plus[i].number;
+    }
+    Decimal re;
+    re.number = "0";
+    for (int i = 0; i < list_to_plus.size(); i++)
+    {
+        re = re + list_to_plus[i];
+    }
+    re.number = re.number.substr(200);
+    re.positive = num1.positive * num2.positive;
+    return re;
 }
