@@ -6,8 +6,10 @@
 #include"NumberObject.h"
 
 using namespace std;
+
 //NumberObject
-/*iostream& operator<<(iostream &io, NumberObject &num)
+
+ostream& operator<<(ostream &io, NumberObject &num)
 {
 	if(num.point_index == 0)
 	{
@@ -26,26 +28,42 @@ using namespace std;
 			return io;
 		}
 	}
-	else
-	{
-		if(num.positive > 0)
-		{
-			string temp=num.number;
-			int c=temp.length();
-			reverse(temp.begin(),temp.end());
-			for_each(temp.begin(),temp.end(),[&c](char n){io<<n;c--;if(c==100){io<<".";}});
-			return io;
-		}
-		else
-		{
-			string temp=num.number;
-			int c=temp.length();
-			reverse(temp.begin(),temp.end());
-			io<<"-"<<temp<<endl;
-			for_each(temp.begin(),temp.end(),[&c](char n){io<<n;c--;if(c==100){io<<".";}});
-			return io;
+    else
+    {
+        if (num.positive > 0)
+        {
+            string temp = num.number;
+            reverse(temp.begin(), temp.end());
+            for (int i = 0; i < temp.length(); i++)
+            {
+                if (temp.length() - i == 100)
+                {
+                    cout << '.';
+                }
+                io << temp[i];
+            }
+            io << endl;
+            return io;
+        }
+        else
+        {
+            string temp=num.number;
+            int c=temp.length();
+            reverse(temp.begin(),temp.end());
+            io<<"-"<<temp<<endl;
+            for (int i = 0; i < temp.length(); i++)
+            {
+                if (temp.length() - i == 100)
+                {
+                    cout << '.';
+                }
+                io << temp[i];
+            }
+            io << endl;
+            return io;
+        }
 	}
-}*/
+}
 
 //int
 Integer::Integer()
