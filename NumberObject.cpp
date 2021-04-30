@@ -285,6 +285,22 @@ Integer operator/(const Integer& num1, const Integer& num2)
     return temp;
 }
 
+Integer factorial(const Integer& num)
+{
+    Integer one; one.number = "1";
+    Integer s = one, now = num;
+    if (num.number == "0")
+    {
+        return one;
+    }
+    while (now.number != one.number)
+    {
+        s = s * now;
+        now = now - one;
+    }
+    return s;
+}
+
 //Decimal
 
 Decimal::Decimal() 
