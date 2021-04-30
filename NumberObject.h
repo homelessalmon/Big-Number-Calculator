@@ -35,7 +35,6 @@ public:
 	Integer operator+();
 	Integer operator-();
 	//operator Decimal();
-	//Decimal calc_inverse();
 };
 
 class Decimal : public NumberObject
@@ -47,6 +46,7 @@ public:
 	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
 	//Decimal& operator=(const Decimal&);
+	friend bool operator>(const Decimal&, const Decimal&);
 	friend Decimal operator+(const Decimal&, const Integer&);
 	friend Decimal operator-(const Decimal&, const Integer&);
 	friend Decimal operator*(const Decimal&, const Integer&);
@@ -62,5 +62,4 @@ public:
 	Decimal operator+();
 	Decimal operator-();
 	//operator Integer();
-	//Decimal calc_inverse();
 };
