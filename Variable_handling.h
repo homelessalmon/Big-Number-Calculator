@@ -14,7 +14,8 @@ public:
 	vector<string> variable_name_D;
 	vector<Decimal> Number_D;
 	//function
-	void push_pack(string name,NumberObject number);
-	int find(string name, NumberObject* return_ptr);//return index and pointer
+	void push_pack(string name, Integer number);
+	void push_pack(string name, Decimal number);
+	int find(string name, NumberObject*& return_ptr);//return index and pointer,index for int 0~100 ,decimal 101~200
 	void del_var(string name);//delete variable
 };
