@@ -32,6 +32,7 @@ public:
 	friend Integer operator-(const Integer&, const Integer&);
 	friend Integer operator*(const Integer&, const Integer&);
 	friend Integer operator/(const Integer&, const Integer&);
+	friend Integer factorial(const Integer&);
 	Integer operator+();
 	Integer operator-();
 	//operator Decimal();
