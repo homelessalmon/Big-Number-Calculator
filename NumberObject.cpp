@@ -992,7 +992,10 @@ Decimal::operator Integer()
 {
     Integer tmp;
     string str = this->number;
-    tmp.positive = this->positive;
+    if (str.back() == '0')
+        tmp.positive = 1;
+    else
+        tmp.positive = this->positive;
     tmp.number = str.substr(100);
     return tmp;
 }
