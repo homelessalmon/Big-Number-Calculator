@@ -303,7 +303,9 @@ Integer factorial(const Integer& num)
 
 Integer Integer::operator-()
 {
-    this->positive = -1;
+    if (this->number != "0") {
+        this->positive *= -1;
+    }
     return *this;
 }
 
@@ -984,7 +986,9 @@ Decimal operator/(const Decimal& num1, const Decimal& num2)
 
 Decimal Decimal::operator-()
 {
-    this->positive = -1;
+    if (this->number != "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
+        this->positive *= -1;
+    }
     return *this;
 }
 
