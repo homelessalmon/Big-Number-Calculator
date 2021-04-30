@@ -1,10 +1,12 @@
 #pragma once
+#include<iostream>
 #include<string>
 #include<vector>
-#define TEST 1
-//
+#include<iterator>
+
 using namespace std;
-//
+
+
 class NumberObject
 {
 public:
@@ -13,10 +15,8 @@ public:
 	int positive;//positive 1,negative -1;
 	int point_index;//index of the point,0 if create by default constructor
 	//function
-	friend ostream& operator<<(ostream&, NumberObject&);
-#if TEST == 0
-	friend istream& operator>>(istream&, NumberObject&)
-#endif
+	friend ostream& operator>>(iostream&, NumberObject&);
+	friend ostream& operator<<(ostream&, NumberObject);
 };
 
 class Integer : public NumberObject
@@ -27,15 +27,15 @@ public:
 	Integer();
 	Integer(const Integer& reference);
 	Integer(const string a_string);//example: BigNumber A="3*1+2";
-	//Integer& operator=(const Integer&);
+	//Integer& operator=(const Decimal&);
 	friend Integer operator+(const Integer&, const Integer&);
 	friend Integer operator-(const Integer&, const Integer&);
 	friend Integer operator*(const Integer&, const Integer&);
 	friend Integer operator/(const Integer&, const Integer&);
 	friend Integer factorial(const Integer&);
-	Integer operator+();
 	Integer operator-();
-	//operator Decimal();
+	operator Decimal();
+	//Decimal calc_inverse();
 };
 
 class Decimal : public NumberObject
@@ -43,11 +43,10 @@ class Decimal : public NumberObject
 public:
 	//variable
 	//function
-	Decimal(){ point_index = 1; positive = 1; }
+	Decimal();
 	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
 	//Decimal& operator=(const Decimal&);
-	friend bool operator>(const Decimal&, const Decimal&);
 	friend Decimal operator+(const Decimal&, const Integer&);
 	friend Decimal operator-(const Decimal&, const Integer&);
 	friend Decimal operator*(const Decimal&, const Integer&);
@@ -60,7 +59,7 @@ public:
 	friend Decimal operator-(const Decimal&, const Decimal&);
 	friend Decimal operator*(const Decimal&, const Decimal&);
 	friend Decimal operator/(const Decimal&, const Decimal&);
-	Decimal operator+();
 	Decimal operator-();
-	//operator Integer();
+	operator Integer();
+	//Decimal calc_inverse();
 };
