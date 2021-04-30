@@ -307,6 +307,15 @@ Integer Integer::operator-()
     return *this;
 }
 
+Integer::operator Decimal()
+{
+    Decimal temp;
+    string str = this->number;
+    temp.positive = this->positive;
+    temp.number = str.insert(0, 100, '0');
+    return temp;
+}
+
 //-------------------------------------------------------------------------
 //Decimal
 
@@ -977,4 +986,13 @@ Decimal Decimal::operator-()
 {
     this->positive = -1;
     return *this;
+}
+
+Decimal::operator Integer()
+{
+    Integer tmp;
+    string str = this->number;
+    tmp.positive = this->positive;
+    tmp.number = str.substr(100);
+    return tmp;
 }
