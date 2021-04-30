@@ -15,5 +15,5 @@ public:
 	vector<Decimal> Number_D;
 	//function
 	void push_pack(string name,NumberObject number);
-	int find(string name);//return index
+	int find(string name, NumberObject* return_ptr);//return index and pointer
 };
