@@ -45,6 +45,7 @@ public:
 	friend Integer operator*(const Integer&, const Integer&);
 	friend Integer operator/(const Integer&, const Integer&);
 	friend Integer factorial(const Integer&);
+	void operator=(const NumberObject&);
 	Integer operator-();
 	operator Decimal();
 	//Decimal calc_inverse();
@@ -72,6 +73,7 @@ public:
 	friend Decimal operator*(const Decimal&, const Decimal&);
 	friend Decimal operator/(const Decimal&, const Decimal&);
 	friend Decimal factorial(const Decimal&);
+	void operator=(const NumberObject&);
 	Decimal operator-();
 	operator Integer();
 	//Decimal calc_inverse();
