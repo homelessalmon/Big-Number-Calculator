@@ -8,7 +8,7 @@ ostream& operator<<(ostream& io, NumberObject num)
 {
     if (num.point_index == 0)
     {
-        if (num.positive > 0)
+        if (num.positive == 1)
         {
             string temp = num.number;
             reverse(temp.begin(), temp.end());
@@ -17,15 +17,18 @@ ostream& operator<<(ostream& io, NumberObject num)
         }
         else
         {
-            string temp = num.number;
-            reverse(temp.begin(), temp.end());
-            io << "-" << temp << endl;
-            return io;
+            if (num.positive == -1)
+            {
+                string temp = num.number;
+                reverse(temp.begin(), temp.end());
+                io << "-" << temp << endl;
+                return io;
+            }
         }
     }
     else
     {
-        if (num.positive > 0)
+        if (num.positive == 1)
         {
             string temp = num.number;
             reverse(temp.begin(), temp.end());
@@ -42,20 +45,23 @@ ostream& operator<<(ostream& io, NumberObject num)
         }
         else
         {
-            string temp = num.number;
-            int c = temp.length();
-            reverse(temp.begin(), temp.end());
-            io << "-";
-            for (int i = 0; i < temp.length(); i++)
+            if (num.positive == -1)
             {
-                if (temp.length() - i == 100)
+                string temp = num.number;
+                int c = temp.length();
+                reverse(temp.begin(), temp.end());
+                io << "-";
+                for (int i = 0; i < temp.length(); i++)
                 {
-                    cout << '.';
+                    if (temp.length() - i == 100)
+                    {
+                        cout << '.';
+                    }
+                    io << temp[i];
                 }
-                io << temp[i];
+                io << endl;
+                return io;
             }
-            io << endl;
-            return io;
         }
     }
 }
@@ -244,7 +250,27 @@ Integer operator/(const Integer& num1, const Integer& num2)
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-
+    if (n1.number == "0")
+    {
+        Integer X;
+        X.number = "0";
+        return X;
+    }
+    else
+    {
+        if (n2.number == "0")
+        {
+            Integer X;
+            X.positive = 3;
+            return X;
+        }
+    }
+    if (num2.positive == 3)
+    {
+        Integer X;
+        X.number = "0";
+        return X;
+    }
     while (n1.number.length() > n2.number.length())
     {
         t = "0" + t;
@@ -522,19 +548,47 @@ Decimal operator*(const Decimal& num1, const Integer& num2)
 
 Decimal operator/(const Decimal& num1, const Integer& num2)
 {
-    Decimal n1 = num1, n2;
-    n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
+    Decimal n1 = num1, n2; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-
+    if (num1.number == t)
+    {
+        Decimal X;
+        X.number = t;
+        return X;
+    }
+    else
+    {
+        if (num2.number == "0")
+        {
+            Decimal X;
+            X.positive == 3;
+            return X;
+        }
+    }
+    if (num2.positive == 3)
+    {
+        Decimal X;
+        X.number = t;
+        return X;
+    }
+    while (n1.number[n1.number.length() - 1] == '0')
+    {
+        n1.number.pop_back();
+        n1.number = "0" + n1.number;
+        n2.number = "0" + n2.number;
+    }
+    while (n2.number[n2.number.length() - 1] == '0')
+    {
+        n2.number.pop_back();
+        n2.number = "0" + n2.number;
+        n1.number = "0" + n1.number;
+    }
     while (n1.number.length() > n2.number.length())
     {
         t = "0" + t;
         n2.number = "0" + n2.number;
     }
-
-    if (n1.number[n1.number.length() - 1] == '0') { n1.number.pop_back(); }
-    if (n2.number[n2.number.length() - 1] == '0') { n2.number.pop_back(); }
 
     for (int i = t.length() - 1; i > -1; i--)
     {
@@ -730,19 +784,47 @@ Decimal operator*(const Integer& num1, const Decimal& num2)
 
 Decimal operator/(const Integer& num1, const Decimal& num2)
 {
-    Decimal n1, n2 = num2;
-    n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number;
+    Decimal n1, n2 = num2; n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-
+    if (num1.number == "0")
+    {
+        Decimal X;
+        X.number = t;
+        return X;
+    }
+    else
+    {
+        if (num2.number == t)
+        {
+            Decimal X;
+            X.positive == 3;
+            return X;
+        }
+    }
+    if (num2.positive == 3)
+    {
+        Decimal X;
+        X.number = t;
+        return X;
+    }
+    while (n1.number[n1.number.length() - 1] == '0')
+    {
+        n1.number.pop_back();
+        n1.number = "0" + n1.number;
+        n2.number = "0" + n2.number;
+    }
+    while (n2.number[n2.number.length() - 1] == '0')
+    {
+        n2.number.pop_back();
+        n2.number = "0" + n2.number;
+        n1.number = "0" + n1.number;
+    }
     while (n1.number.length() > n2.number.length())
     {
         t = "0" + t;
         n2.number = "0" + n2.number;
     }
-
-    if (n1.number[n1.number.length() - 1] == '0') { n1.number.pop_back(); }
-    if (n2.number[n2.number.length() - 1] == '0') { n2.number.pop_back(); }
 
     for (int i = t.length() - 1; i > -1; i--)
     {
@@ -940,18 +1022,48 @@ Decimal operator*(const Decimal& num1, const Decimal& num2)
 
 Decimal operator/(const Decimal& num1, const Decimal& num2)
 {
+    
     Decimal n1 = num1, n2 = num2;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-
+    if (num1.number == t)
+    {
+        Decimal X;
+        X.number = t;
+        return X;
+    }
+    else
+    {
+        if (num2.number == t)
+        {
+            Decimal X;
+            X.positive == 3;
+            return X;
+        }
+    }
+    if (num2.positive == 3)
+    {
+        Decimal X;
+        X.number = t;
+        return X;
+    }
+    while (n1.number[n1.number.length() - 1] == '0')
+    {
+        n1.number.pop_back();
+        n1.number = "0" + n1.number;
+        n2.number = "0" + n2.number;
+    }
+    while (n2.number[n2.number.length() - 1] == '0')
+    {
+        n2.number.pop_back();
+        n2.number = "0" + n2.number;
+        n1.number = "0" + n1.number;
+    }
     while (n1.number.length() > n2.number.length())
     {
         t = "0" + t;
         n2.number = "0" + n2.number;
     }
-
-    if (n1.number[n1.number.length() - 1] == '0') { n1.number.pop_back(); }
-    if (n2.number[n2.number.length() - 1] == '0') { n2.number.pop_back(); }
 
     for (int i = t.length() - 1; i > -1; i--)
     {
@@ -984,6 +1096,28 @@ Decimal operator/(const Decimal& num1, const Decimal& num2)
     return temp;
 }
 
+Decimal factorial(const Decimal& num)
+{
+    bool check = false;
+    for_each(num.number.begin(), num.number.begin() + 99, [&check](char w) {if (w != '0') { check = true; }});
+    if (check)
+    {
+        Decimal X; X.positive = 2; return X;
+    }
+    Decimal one; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+    Decimal s = one, now = num;
+    if (num.number == "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+    {
+        return one;
+    }
+    while (now.number != one.number)
+    {
+        s = s * now;
+        now = now - one;
+    }
+    return s;
+}
+
 Decimal Decimal::operator-()
 {
     if (this->number != "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
@@ -1002,10 +1136,4 @@ Decimal::operator Integer()
         tmp.positive = this->positive;
     tmp.number = str.substr(100);
     return tmp;
-}
-
-NumberObject::NumberObject(int error_code) {
-    positive = error_code;
-    number = "";
-    point_index = 0;
 }
