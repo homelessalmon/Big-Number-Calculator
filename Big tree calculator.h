@@ -53,6 +53,7 @@ NumberObject value_process(string input) {
 	vector<NumberObject> num;
 	vector<int> num_pos;
 	int cur = 0;
+	NumberObject error(-128);
 	while (1) {
 		//如果讀到數字就將其暫存為一個變數
 		if ((input[cur] <= '9' && input[cur] >= '0')) {
@@ -81,7 +82,6 @@ NumberObject value_process(string input) {
 			default:
 				break;
 			}
-			
 		}
 
 		//讀到括號就遞迴，將括號內的結果作為變數暫存
@@ -102,8 +102,8 @@ NumberObject value_process(string input) {
 				cur++;
 				if (cur == input.size()) {
 					//如果parenthese_deepth合理的話可以做防呆？
-					//想辦法報錯，原因是無法找到對應的前後括號
-					//return ?
+					error.positive = 20;
+					return error;
 				}
 			}
 			int length = end - begin;
@@ -111,7 +111,8 @@ NumberObject value_process(string input) {
 			num_pos.push_back(begin);
 		}
 		else if (input[cur] == ')') {
-			//代表遇到沒有成對的後括號
+			error.positive = 21;
+			return error;
 		}
 
 		//如果是變數名就尋找該變數並將值存入暫存變數欄
@@ -125,6 +126,7 @@ NumberObject value_process(string input) {
 			num.push_back(find_veriable(input.substr(begin, length)));
 			num_pos.push_back(begin);
 		}
+		//find()怎麼用
 
 		//讀到結尾就結束
 		else if (input[cur] == '\0') {
@@ -177,71 +179,83 @@ NumberObject value_process(string input) {
 	//確保兩個數中間一定有運算子
 	//有問題就回傳輸入錯誤
 	if (formula[0] == '!' || formula[0] == '^' || formula[0] == '*' || formula[0] == '/') {
-		//輸出錯誤狀況
+		error.positive = 30;
+		return error;
 	}
 	if (formula[formula.size()] == '^' || formula[formula.size()] == '*' || formula[formula.size()] == '/' || formula[formula.size()] == '+' || formula[formula.size()] == '-') {
-		//輸出錯誤狀況
+		error.positive = 31;
+		return error;
 	}
 	for (int i = 1; i < formula.size() - 1; i++) {
 		switch (formula[i]) {
 		case '!':
 			if ((formula[i - 1] != '!' && formula[i - 1] != 'n')) {
-				//輸出錯誤狀況
+				error.positive = 32;
+				return error;
 			}
 			break;
 		case '^':
 		case '*':
 		case '/':
 			if (formula[i - 1] != 'n' || (formula[i + 1] != 'n' && formula[i + 1] != '+' && formula[i + 1] != '-')) {
-				//輸出錯誤狀況
+				error.positive = 33;
+				return error;
 			}
 			break;
 		case '+':
 		case '-':
-			if ((formula[i - 1] != '+' && formula[i - 1] != '-' && formula[i - 1] != 'n') || (formula[i + 1] != '+' && formula[i + 1] != '-' && formula[i + 1] != 'n')) {
-				//輸出錯誤狀況
+			if (formula[i + 1] != '+' && formula[i + 1] != '-' && formula[i + 1] != 'n') {
+				error.positive = 34;
+				return error;
 			}
 			break;
 		case 'n' :
 			if (formula[i - 1] == 'n' || formula[i + 1] == 'n') {
-				//輸出錯誤狀況
+				error.positive = 35;
+				return error;
 			}
 			break;
 		default:
-			//輸出錯誤狀況
+			error.positive = 36;
+			return error;
 			break;
 		}
 	}
 	// n+n*n--n!
-
-	if (formula_facrorial(formula, num) != 0) {
-		//return算式錯誤 
-	}
-
-	if (formula_power(formula, num) != 0) {
-		//return算式錯誤
-	}
-
 	for (int i = 0; i < num.size(); i++) {
 		if (num[i].positive != 1 && num[i].positive != -1) {
 			return num[i];
 		}
 	}
+	
+	if (formula_facrorial(formula, num) != 0) {
+		error.positive = 40;
+		return error;
+	}
+
+	if (formula_power(formula, num) != 0) {
+		error.positive = 41;
+		return error;
+	}
 
 	if (formula_sign(formula, num) != 0) {
-		//return算式錯誤
+		error.positive = 42;
+		return error;
 	}
 
 	if (formula_muldiv(formula, num) != 0) {
-		//return算式錯誤
+		error.positive = 43;
+		return error;
 	}
 
 	if (formula_addsub(formula, num) != 0) {
-		//return算式錯誤
+		error.positive = 44;
+		return error;
 	}
 
 	if (num.size() > 0) {
-		//return算式錯誤
+		error.positive = 50;
+		return error;
 	}
 	return num[0];
 }
@@ -290,9 +304,7 @@ int formula_power(string& formula, vector<NumberObject>& numlist) {
 	}
 	return 0;
 }
-//01234567
-//n++++++n
-//-----n
+
 int posibility(string sign) {
 	int posibility = 1;
 	for (int i = 0; i < sign.size(); i++) {
@@ -316,7 +328,12 @@ int formula_sign(string& formula, vector<NumberObject>& numlist) {
 			i++;
 		}
 		i--;
-		numlist[0].positive = numlist[0].positive * posibility(formula.substr(0, i));
+		if (posibility(formula.substr(0, i)) == 0) {
+			return 1;
+		}
+		else {
+			numlist[0].positive = numlist[0].positive * posibility(formula.substr(0, i));
+		}
 		formula.erase(0, i);
 	}
 	for (int i = formula.size() - 1; i >= 1; i++) {
@@ -331,7 +348,12 @@ int formula_sign(string& formula, vector<NumberObject>& numlist) {
 			int length = i - j; 
 			if (length > 0) {
 				int order = order_of_n(formula, i + 1);
-				numlist[order].positive = numlist[order].positive * posibility(formula.substr(j + 1, length));
+				if (posibility(formula.substr(j + 1, length)) == 0) {
+					return 1;
+				}
+				else {
+					numlist[order].positive = numlist[order].positive * posibility(formula.substr(j + 1, length));
+				}
 				formula.erase(j + 1, length);
 				i = j - 1;
 			}
