@@ -17,13 +17,12 @@ void Variable_list::push_pack(string name, Decimal number)
 	Number_D.push_back(number);
 }
 
-int Variable_list::find(string name, NumberObject*& return_ptr)
+int Variable_list::find(string name)
 {
 	for (int i = 0; i < variable_name_I.size(); i++)
 	{
 		if (name == variable_name_I[i])
 		{
-			return_ptr = &Number_I[i];
 			return i;
 		}
 	}
@@ -32,7 +31,7 @@ int Variable_list::find(string name, NumberObject*& return_ptr)
 		if (name == variable_name_D[i])
 		{
 			return_ptr = &Number_D[i];
-			return i;
+			return i + 100;
 		}
 	}
 }
