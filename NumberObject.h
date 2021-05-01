@@ -45,10 +45,11 @@ public:
 	friend Integer operator*(const Integer&, const Integer&);
 	friend Integer operator/(const Integer&, const Integer&);
 	friend Integer factorial(const Integer&);
+	friend Integer power(const Integer& base, const Integer& exp);
+	friend Integer power(const Integer& base, const Decimal& exp);
 	void operator=(const NumberObject&);
 	Integer operator-();
 	operator Decimal();
-	//Decimal calc_inverse();
 };
 
 class Decimal : public NumberObject
@@ -73,8 +74,9 @@ public:
 	friend Decimal operator*(const Decimal&, const Decimal&);
 	friend Decimal operator/(const Decimal&, const Decimal&);
 	friend Decimal factorial(const Decimal&);
+	friend Decimal power(const Decimal& base, const Integer& exp);
+	friend Decimal power(const Decimal& base, const Decimal& exp);
 	void operator=(const NumberObject&);
 	Decimal operator-();
 	operator Integer();
-	//Decimal calc_inverse();
 };
