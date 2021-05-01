@@ -16,6 +16,6 @@ public:
 	//function
 	void push_pack(string name, Integer number);
 	void push_pack(string name, Decimal number);
-	int find(string name, NumberObject*& return_ptr);//return index and pointer,index for int 0~100 ,decimal 101~200
+	int find(string name);//return index ,index for int 0~100 ,decimal 101~200
 	void del_var(string name);//delete variable
 };
