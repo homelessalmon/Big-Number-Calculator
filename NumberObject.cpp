@@ -81,7 +81,6 @@ Integer::Integer(const Integer& reference)
 
 /*Integer& Integer::operator=(const Decimal&)
 {
-
 }*/
 
 Integer operator+(const Integer& n1, const Integer& n2)
@@ -323,6 +322,13 @@ Integer factorial(const Integer& num)
         now = now - one;
     }
     return s;
+}
+
+
+void Integer::operator=(const NumberObject& input) {
+    number = input.number;
+    positive = input.positive;
+    point_index = input.point_index;
 }
 
 Integer Integer::operator-()
@@ -1114,6 +1120,12 @@ Decimal factorial(const Decimal& num)
         now = now - one;
     }
     return s;
+}
+
+void Decimal::operator=(const NumberObject& input) {
+    number = input.number;
+    positive = input.positive;
+    point_index = input.point_index;
 }
 
 Decimal Decimal::operator-()
