@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include<iterator>
+#include<algorithm>
 
 using namespace std;
 
@@ -70,6 +71,7 @@ public:
 	friend Decimal operator-(const Decimal&, const Decimal&);
 	friend Decimal operator*(const Decimal&, const Decimal&);
 	friend Decimal operator/(const Decimal&, const Decimal&);
+	friend Decimal factorial(const Decimal&);
 	Decimal operator-();
 	operator Integer();
 	//Decimal calc_inverse();
