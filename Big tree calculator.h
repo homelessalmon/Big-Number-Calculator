@@ -22,30 +22,56 @@ NumberObject find_veriable(string input) {
 	//return integer;
 }
 
-void string_segmentation(string input, vector<string>& seg, string segflag) {
-	int cur = 0, next = 0;
-	while (next != string::npos) {
-		next = input.find_first_of(segflag, cur);
-		if (next == string::npos) {
-			seg.push_back(input.substr(cur));
-			break;
+void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
+	int cur = 0, nextpack = 0, nextseg = 0;
+	while (nextpack != string::npos && nextseg != string::npos) {
+		nextseg = input.find_first_of(segflag, cur);
+		nextpack = input.find_first_of(packflag, cur);
+		if (nextpack == string::npos || nextseg < nextpack) {
+			if (nextseg == string::npos) {
+				seg.push_back(input.substr(cur));
+				break;
+			}
+			seg.push_back(input.substr(cur, nextseg - cur));
+			cur = nextseg + 1;
 		}
-		seg.push_back(input.substr(cur, next - cur));
-		cur = next + 1;
+		else if (nextseg == string::npos || nextseg > nextpack) {
+			int packend = input.find_first_of(packflag, nextpack + 1);
+			if (nextpack != cur) {
+				seg.push_back(input.substr(cur, nextpack - cur));
+			}
+			seg.push_back(input.substr(nextpack + 1, packend - nextpack - 1));
+			cur = input.find_first_not_of(segflag + packflag, packend);
+		}
 	}
 }
 
 void string_process(string input) {
 	vector<string> input_seg;
-	string_segmentation(input, input_seg, " ");
-	if (input_seg[0] == "Integer" || input_seg[0] == "Decimal") {
-		//建立以input_seg[1]為名的變數
+	string_segmentation(input, input_seg, " ", '\"');
+	if (input_seg[0] == "Integer") {
+		if (input_seg.size() == 2) {
+			Integer integer(0);
+			push_pack(input_seg[1], integer);
+		}
+		else {
+			push_pack(input_seg[1], value_process(input_seg[3]));
+		}
+	}
+	else if (input_seg[0] == "Decimal") {
+		if (input_seg.size() == 2) {
+			Decimal decimal(0);
+			push_pack(input_seg[1], decimal);
+		}
+		else {
+			push_pack(input_seg[1], value_process(input_seg[3]));
+		}
 	}
 	else if (input_seg[1] == "=") {
 		//將input_seg[0]的變數賦值為input_seg[2]
 	}
 	else {
-		//input_seg[0]就是運算式
+		cout << value_process(input_seg[0]);
 	}
 }
 
