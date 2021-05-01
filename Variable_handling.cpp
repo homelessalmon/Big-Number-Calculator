@@ -34,6 +34,7 @@ int Variable_list::find(string name)
 			return i + 100;
 		}
 	}
+	return -1;
 }
 
 void Variable_list::del_var(string name)
