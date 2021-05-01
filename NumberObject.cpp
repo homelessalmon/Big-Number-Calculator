@@ -64,6 +64,22 @@ ostream& operator<<(ostream& io, NumberObject num)
     }
 }
 
+NumberObject::operator Integer()
+{
+    Integer tmp;
+    tmp.number = this->number;
+    tmp.positive = this->positive;
+    return tmp;
+}
+
+NumberObject::operator Decimal()
+{
+    Decimal tmp;
+    tmp.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + number;
+    tmp.positive = positive;
+    return tmp;
+}
+
 //int
 
 Integer::Integer()
