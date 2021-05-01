@@ -6,7 +6,8 @@
 
 using namespace std;
 
-class Big_tree_calculator {
+class Big_tree_calculator
+{
 public:
 
 	//variable
@@ -17,8 +18,8 @@ public:
 
 NumberObject find_veriable(string input) {
 	//todo list
-	Integer integer(0);
-	return integer;
+	//Big_tree_calculator.list.find(input);
+	//return integer;
 }
 
 void string_segmentation(string input, vector<string>& seg, string segflag) {
@@ -148,21 +149,22 @@ NumberObject value_process(string input) {
 
 	
 	//用merge還原算式，並且變數以n儲存
-	char* formula;
-	int formula_size = num.size() + op.size();
-	formula = new char[formula_size];
+	string formula;
 	num_pos.push_back(65536);
 	op_pos.push_back(65536);
 	int num_pos_check = 0, op_pos_check = 0;
-	for (int i = 0; i < formula_size; i++) {
+	while (1) {
 		if (num_pos[num_pos_check] < op_pos[op_pos_check] ) {
-			formula[i] = 'n';
+			formula = formula + 'n';
             num_pos_check++;
         }
         else {
-            formula[i] = op[op_pos_check];
+            formula = formula + op[op_pos_check];
             op_pos_check++;
         }
+		if (num_pos[num_pos_check] == 65536 && op_pos[op_pos_check] == 65536) {
+			break;
+		}
     }
 	num_pos.pop_back();
 	op_pos.pop_back();
@@ -177,10 +179,10 @@ NumberObject value_process(string input) {
 	if (formula[0] == '!' || formula[0] == '^' || formula[0] == '*' || formula[0] == '/') {
 		//輸出錯誤狀況
 	}
-	if (formula[formula_size] == '^' || formula[formula_size] == '*' || formula[formula_size] == '/' || formula[formula_size] == '+' || formula[formula_size] == '-' || ) {
+	if (formula[formula.size()] == '^' || formula[formula.size()] == '*' || formula[formula.size()] == '/' || formula[formula.size()] == '+' || formula[formula.size()] == '-') {
 		//輸出錯誤狀況
 	}
-	for (int i = 1; i < formula_size - 1; i++) {
+	for (int i = 1; i < formula.size() - 1; i++) {
 		switch (formula[i]) {
 		case '!':
 			if ((formula[i - 1] != '!' && formula[i - 1] != 'n')) {
@@ -201,7 +203,7 @@ NumberObject value_process(string input) {
 			}
 			break;
 		case 'n' :
-			if (formula[i - 1] == n || formula[i + 1] == n) {
+			if (formula[i - 1] == 'n' || formula[i + 1] == 'n') {
 				//輸出錯誤狀況
 			}
 			break;
@@ -210,40 +212,190 @@ NumberObject value_process(string input) {
 			break;
 		}
 	}
+	// n+n*n--n!
 
-	//todo: 底下架構會再改
-	//做階乘
-	for (int i = 0; i < op.size(); i++) {
-		int factorial_pos;
-		if (op[i] == '!') {
-			factorial_pos = op_pos[i];
-		}
-		for (int j = 0; j < num.size(); j++) {
-			if (num_pos[j] > factorial_pos) {
-				num[j - 1] = factorial(num[j - 1]); //當輸入小數、負數時應報錯
-				op.erase(op.begin() + i);
-				op_pos.erase(op_pos.begin() + i);
-			}
+	if (formula_facrorial(formula, num) != 0) {
+		//return算式錯誤 
+	}
+
+	if (formula_power(formula, num) != 0) {
+		//return算式錯誤
+	}
+
+	for (int i = 0; i < num.size(); i++) {
+		if (num[i].positive != 1 && num[i].positive != -1) {
+			return num[i];
 		}
 	}
 
-	//做次方
-	for (int i = op.size() - 1; i >= 0; i--) {
-		int power_pos;
-		if (op[i] == '^') {
-			power_pos = op_pos[i];
-		}
-		for (int j = 0; j < num.size(); j++) {
-			if (num_pos[j] > power_pos) {
-				num[j - 1] = power(num[j - 1], num[j]); //power(a,b) => a^b
-				
-				op.erase(op.begin() + i);
-				op_pos.erase(op_pos.begin() + i);
+	if (formula_sign(formula, num) != 0) {
+		//return算式錯誤
+	}
 
-				num.erase(num.begin() + j);
-				num_pos.erase(num_pos.begin() + j);
-			}
-		}
+	if (formula_muldiv(formula, num) != 0) {
+		//return算式錯誤
+	}
+
+	if (formula_addsub(formula, num) != 0) {
+		//return算式錯誤
+	}
+
+	if (num.size() > 0) {
+		//return算式錯誤
 	}
 	return num[0];
+}
+
+int order_of_n(const string& formula, int pos) {
+	int order = 0;
+	for (int i = 0; i < pos; i++) { //這是第幾個n
+		if (formula[i] == 'n') {
+			order++;
+		}
+	}
+	return order;
+}
+
+int formula_facrorial(string& formula, vector<NumberObject>& numlist) {
+	for (int i = 0; i < formula.size(); i++) {
+		if (formula[i] == '!') {
+			if (formula[i - 1] == 'n') {
+				int order = order_of_n(formula, i - 1);
+				numlist[order] = facrorial(numlist[order]);
+				formula.erase(i, 1); //把運算完的運算子清除
+				i--;
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int formula_power(string& formula, vector<NumberObject>& numlist) {
+	for (int i = formula.size() - 1; i >= 0; i++) {
+		if (formula[i] == '^') {
+			if (formula[i - 1] == 'n') {
+				int order = order_of_n(formula, i - 1);
+				numlist[order] = power(numlist[order], numlist[order + 1]); //power(n, m) = n^m;
+				formula.erase(i, 2);
+				i -= 2;
+				numlist.erase(numlist.begin() + order + 1);
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+//01234567
+//n++++++n
+//-----n
+int posibility(string sign) {
+	int posibility = 1;
+	for (int i = 0; i < sign.size(); i++) {
+		if (sign[i] == '+') {
+			continue;
+		}
+		else if (sign[i] == '-') {
+			posibility *= -1;
+		}
+		else {
+			return 0;
+		}
+	}
+	return posibility;
+}
+
+int formula_sign(string& formula, vector<NumberObject>& numlist) {
+	if (formula[0] == '+' || formula[0] == '-') { //如--++-+n = -n
+		int i = 0;
+		while (formula[i] != 'n') {
+			i++;
+		}
+		i--;
+		numlist[0].positive = numlist[0].positive * posibility(formula.substr(0, i));
+		formula.erase(0, i);
+	}
+	for (int i = formula.size() - 1; i >= 1; i++) {
+		if (formula[i] == '+' || formula[i] == '-') { //n+--+++n = n+n
+			if (formula[i + 1] != 'n') {
+				return 1;
+			}
+			int j = i;
+			while (j != 0 && formula[j - 1] == '+' || formula[j - 1] == '-') {
+				j--;
+			}
+			int length = i - j; 
+			if (length > 0) {
+				int order = order_of_n(formula, i + 1);
+				numlist[order].positive = numlist[order].positive * posibility(formula.substr(j + 1, length));
+				formula.erase(j + 1, length);
+				i = j - 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int formula_muldiv(string& formula, vector<NumberObject>& numlist) {
+	for (int i = 0; i < formula.size(); i++) {
+		if (formula[i] == '*') {
+			if (formula[i - 1] == 'n') {
+				int order = order_of_n(formula, i - 1);
+				numlist[order] = mul(numlist[order], numlist[order + 1]);
+				formula.erase(i, 2);
+				i -= 2;
+				numlist.erase(numlist.begin() + order + 1);
+			}
+			else {
+				return 1;
+			}
+		}
+		if (formula[i] == '/') {
+			if (formula[i - 1] == 'n') {
+				int order = order_of_n(formula, i - 1);
+				numlist[order] = div(numlist[order], numlist[order + 1]);
+				formula.erase(i, 2);
+				i -= 2;
+				numlist.erase(numlist.begin() + order + 1);
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int formula_addsub(string& formula, vector<NumberObject>& numlist) {
+	for (int i = 0; i < formula.size(); i++) {
+		if (formula[i] == '+') {
+			if (formula[i - 1] == 'n') {
+				int order = order_of_n(formula, i - 1);
+				numlist[order] = add(numlist[order], numlist[order + 1]);
+				formula.erase(i, 2);
+				i -= 2;
+				numlist.erase(numlist.begin() + order + 1);
+			}
+			else {
+				return 1;
+			}
+		}
+		if (formula[i] == '-') {
+			if (formula[i - 1] == 'n') {
+				int order = order_of_n(formula, i - 1);
+				numlist[order] = sub(numlist[order], numlist[order + 1]);
+				formula.erase(i, 2);
+				i -= 2;
+				numlist.erase(numlist.begin() + order + 1);
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+	return 0;
 }
