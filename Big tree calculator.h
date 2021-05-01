@@ -6,21 +6,14 @@
 
 using namespace std;
 
-class Big_tree_calculator
-{
+class Big_tree_calculator {
 public:
 
 	//variable
-	Variable_list list;
+	Variable_list variableList;
 	//function
 	void exe();
 };
-
-NumberObject find_veriable(string input) {
-	//todo list
-	//Big_tree_calculator.list.find(input);
-	//return integer;
-}
 
 void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
 	int cur = 0, nextpack = 0, nextseg = 0;
@@ -46,38 +39,94 @@ void string_segmentation(string input, vector<string>& seg, string segflag, char
 	}
 }
 
-void string_process(string input) {
+
+void string_process(string input, Variable_list& variableList) {
 	vector<string> input_seg;
 	string_segmentation(input, input_seg, " ", '\"');
 	if (input_seg[0] == "Integer") {
+		if (variableList.find(input_seg[1]) != -1) {
+			variableList.del_var(input_seg[1]);
+		}
 		if (input_seg.size() == 2) {
 			Integer integer(0);
-			push_pack(input_seg[1], integer);
+			variableList.push_pack(input_seg[1], integer);
 		}
 		else {
-			push_pack(input_seg[1], value_process(input_seg[3]));
+			NumberObject temp = value_process(input_seg[3], variableList);
+			if (temp.point_index == 0) {
+				Integer integer;
+				integer = temp;
+				variableList.push_pack(input_seg[1], integer);
+			}
+			else {
+				Decimal decimal;
+				decimal = temp;
+				Integer integer;
+				integer = decimal;
+				variableList.push_pack(input_seg[1], integer);
+			}
 		}
 	}
 	else if (input_seg[0] == "Decimal") {
 		if (input_seg.size() == 2) {
 			Decimal decimal(0);
-			push_pack(input_seg[1], decimal);
+			variableList.push_pack(input_seg[1], decimal);
 		}
 		else {
-			push_pack(input_seg[1], value_process(input_seg[3]));
+			NumberObject temp = value_process(input_seg[3], variableList);
+			if (temp.point_index == 0) {
+				Integer integer;
+				integer = temp;
+				Decimal decimal;
+				decimal = integer;
+				variableList.push_pack(input_seg[1], integer);
+			}
+			else {
+				Decimal decimal;
+				decimal = temp;
+				variableList.push_pack(input_seg[1], decimal);
+			}
 		}
 	}
 	else if (input_seg[1] == "=") {
+		NumberObject temp = value_process(input_seg[2], variableList);
+		int v = variableList.find(input_seg[0]);
+		if (v <= 100) {
+			if (temp.point_index == 0) {
+				variableList.Number_I[v] = temp;
+			}
+			else {
+				Decimal decimal;
+				decimal = temp;
+				Integer integer;
+				integer = decimal;
+				variableList.Number_I[v] = integer;
+			}
+		}
+		else {
+			if (temp.point_index != 0) {
+				variableList.Number_D[v - 100] = temp;
+			}
+			else {
+				Integer integer;
+				integer = temp;
+				Decimal decimal;
+				decimal = integer;
+				variableList.Number_D[v - 100] = decimal;
+			}
+		}
 		//將input_seg[0]的變數賦值為input_seg[2]
 	}
 	else {
-		cout << value_process(input_seg[0]);
+		cout << value_process(input_seg[0], variableList);
 	}
 }
 
-NumberObject value_process(string input) {
-	vector<NumberObject> num;
-	vector<int> num_pos;
+NumberObject value_process(string input, Variable_list& variableList) {
+	vector<Integer> num_int;
+	vector<Decimal> num_dec;
+	vector<int> int_pos;
+	vector<int> dec_pos;
 	int cur = 0;
 	NumberObject error(-128);
 	while (1) {
@@ -95,14 +144,14 @@ NumberObject value_process(string input) {
 			switch (is_Decimal) {
 			case 1: {
 				Integer temp(input.substr(begin, length));
-				num.push_back(temp);
-				num_pos.push_back(begin);
+				num_int.push_back(temp);
+				int_pos.push_back(begin);
 				break;
 			}
 			case 0: {
 				Decimal temp(input.substr(begin, length));
-				num.push_back(temp);
-				num_pos.push_back(begin);
+				num_dec.push_back(temp);
+				dec_pos.push_back(begin);
 				break;
 			}
 			default:
@@ -133,8 +182,17 @@ NumberObject value_process(string input) {
 				}
 			}
 			int length = end - begin;
-			num.push_back(value_process(input.substr(begin, length)));
-			num_pos.push_back(begin);
+			if (value_process(input.substr(begin, length), variableList).point_index == 0) {
+				Integer temp;
+				temp = value_process(input.substr(begin, length), variableList);
+				int_pos.push_back(begin);
+
+			}
+			else {
+				Decimal temp;
+				temp = value_process(input.substr(begin, length), variableList);
+				dec_pos.push_back(begin);
+			}
 		}
 		else if (input[cur] == ')') {
 			error.positive = 21;
@@ -149,8 +207,19 @@ NumberObject value_process(string input) {
 			}
 			end = cur;
 			int length = end - begin;
-			num.push_back(find_veriable(input.substr(begin, length)));
-			num_pos.push_back(begin);
+			int v = variableList.find(input.substr(begin, length));
+			if (v <= 100) {
+				num_int.push_back(variableList.Number_I[v]);
+				int_pos.push_back(begin);
+			}
+			else if (v > 100) {
+				num_dec.push_back(variableList.Number_D[v-100]);
+				dec_pos.push_back(begin);
+			}
+			else if (v == -1) {
+				error.positive = 10;
+				return error;
+			}
 		}
 		//find()怎麼用
 
@@ -176,25 +245,48 @@ NumberObject value_process(string input) {
 	}
 
 	
-	//用merge還原算式，並且變數以n儲存
-	string formula;
-	num_pos.push_back(65536);
-	op_pos.push_back(65536);
-	int num_pos_check = 0, op_pos_check = 0;
+	//用merge還原算式，並且變數以i、d儲存
+	int_pos.push_back(65536);
+	dec_pos.push_back(65536);
+	string num;
+	vector<int> numpos;
+	int int_pos_check = 0, dec_pos_check = 0;
 	while (1) {
-		if (num_pos[num_pos_check] < op_pos[op_pos_check] ) {
-			formula = formula + 'n';
-            num_pos_check++;
+		if (int_pos[int_pos_check] < dec_pos[dec_pos_check] ) {
+			num = num + 'i';
+			numpos.push_back(int_pos[int_pos_check]);
+            int_pos_check++;
         }
         else {
-            formula = formula + op[op_pos_check];
-            op_pos_check++;
+			num = num + 'd';
+			numpos.push_back(dec_pos[dec_pos_check]);
+            dec_pos_check++;
         }
-		if (num_pos[num_pos_check] == 65536 && op_pos[op_pos_check] == 65536) {
+		if (int_pos[int_pos_check] == 65536 && dec_pos[dec_pos_check] == 65536) {
 			break;
 		}
     }
-	num_pos.pop_back();
+	int_pos.pop_back();
+	dec_pos.pop_back();
+
+	string formula;
+	op_pos.push_back(65536);
+	numpos.push_back(65536);
+	int num_pos_check = 0, op_pos_check = 0;
+	while (1) {
+		if (numpos[num_pos_check] < op_pos[op_pos_check] ) {
+			formula = formula + num[num_pos_check];
+            num_pos_check++;
+        }
+        else {
+			formula = formula + op[op_pos_check];
+            op_pos_check++;
+        }
+		if (numpos[num_pos_check] == 65536 && op_pos[op_pos_check] == 65536) {
+			break;
+		}
+    }
+	numpos.pop_back();
 	op_pos.pop_back();
 
 	//這塊應該有更好的寫法但我一時間想不到 先這樣
@@ -215,7 +307,7 @@ NumberObject value_process(string input) {
 	for (int i = 1; i < formula.size() - 1; i++) {
 		switch (formula[i]) {
 		case '!':
-			if ((formula[i - 1] != '!' && formula[i - 1] != 'n')) {
+			if ((formula[i - 1] != '!' && formula[i - 1] != 'i')) {
 				error.positive = 32;
 				return error;
 			}
@@ -223,20 +315,21 @@ NumberObject value_process(string input) {
 		case '^':
 		case '*':
 		case '/':
-			if (formula[i - 1] != 'n' || (formula[i + 1] != 'n' && formula[i + 1] != '+' && formula[i + 1] != '-')) {
+			if (formula[i - 1] != 'n' || (formula[i + 1] != 'd' && formula[i + 1] != 'i' && formula[i + 1] != '+' && formula[i + 1] != '-')) {
 				error.positive = 33;
 				return error;
 			}
 			break;
 		case '+':
 		case '-':
-			if (formula[i + 1] != '+' && formula[i + 1] != '-' && formula[i + 1] != 'n') {
+			if (formula[i + 1] != '+' && formula[i + 1] != '-' && formula[i + 1] != 'd' && formula[i + 1] != 'i') {
 				error.positive = 34;
 				return error;
 			}
 			break;
-		case 'n' :
-			if (formula[i - 1] == 'n' || formula[i + 1] == 'n') {
+		case 'd' :
+		case 'i':
+			if (formula[i - 1] == 'd' || formula[i + 1] == 'd' || formula[i - 1] == 'i' || formula[i + 1] == 'i') {
 				error.positive = 35;
 				return error;
 			}
@@ -248,60 +341,77 @@ NumberObject value_process(string input) {
 		}
 	}
 	// n+n*n--n!
-	for (int i = 0; i < num.size(); i++) {
-		if (num[i].positive != 1 && num[i].positive != -1) {
-			return num[i];
+	for (int i = 0; i < num_int.size(); i++) {
+		if (num_int[i].positive != 1 && num_int[i].positive != -1) {
+			return num_int[i];
+		}
+	}
+	for (int i = 0; i < num_dec.size(); i++) {
+		if (num_dec[i].positive != 1 && num_dec[i].positive != -1) {
+			return num_dec[i];
 		}
 	}
 	
-	if (formula_facrorial(formula, num) != 0) {
+	if (formula_facrorial(formula, num_int, num_dec) != 0) {
 		error.positive = 40;
 		return error;
 	}
 
-	if (formula_power(formula, num) != 0) {
+	if (formula_power(formula, num_int, num_dec) != 0) {
 		error.positive = 41;
 		return error;
 	}
 
-	if (formula_sign(formula, num) != 0) {
+	if (formula_sign(formula, num_int, num_dec) != 0) {
 		error.positive = 42;
 		return error;
 	}
 
-	if (formula_muldiv(formula, num) != 0) {
+	if (formula_muldiv(formula, num_int, num_dec) != 0) {
 		error.positive = 43;
 		return error;
 	}
 
-	if (formula_addsub(formula, num) != 0) {
+	if (formula_addsub(formula, num_int, num_dec) != 0) {
 		error.positive = 44;
 		return error;
 	}
 
-	if (num.size() > 0) {
+	if (num_int.size() + num_dec.size() > 1) {
 		error.positive = 50;
 		return error;
 	}
-	return num[0];
+
+	if (num_int.size() == 1) {
+		return num_int[0];
+	}
+	else if (num_dec.size() == 1) {
+		return num_dec[0];
+	}
 }
 
-int order_of_n(const string& formula, int pos) {
+int order_of(const string& formula, char type, int pos) {
 	int order = 0;
 	for (int i = 0; i < pos; i++) { //這是第幾個n
-		if (formula[i] == 'n') {
+		if (formula[i] == type) {
 			order++;
 		}
 	}
 	return order;
 }
 
-int formula_facrorial(string& formula, vector<NumberObject>& numlist) {
+int formula_facrorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '!') {
-			if (formula[i - 1] == 'n') {
-				int order = order_of_n(formula, i - 1);
-				numlist[order] = facrorial(numlist[order]);
+			if (formula[i - 1] == 'i') {
+				int order = order_of(formula, 'i', i - 1);
+				intlist[order] = factorial(intlist[order]);
+				formula.erase(i, 1); //把運算完的運算子清除
+				i--;
+			}
+			else if (formula[i - 1] == 'd') {
+				int order = order_of(formula, 'd', i - 1);
+				declist[order] = factorial(declist[order]);
 				formula.erase(i, 1); //把運算完的運算子清除
 				i--;
 			}
@@ -313,15 +423,42 @@ int formula_facrorial(string& formula, vector<NumberObject>& numlist) {
 	return 0;
 }
 
-int formula_power(string& formula, vector<NumberObject>& numlist) {
+int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = formula.size() - 1; i >= 0; i++) {
 		if (formula[i] == '^') {
-			if (formula[i - 1] == 'n') {
-				int order = order_of_n(formula, i - 1);
-				numlist[order] = power(numlist[order], numlist[order + 1]); //power(n, m) = n^m;
+			if (formula[i - 1] == 'i') {
+				int order = order_of(formula, 'i', i - 1);
+				if (formula[i + 1] == 'i') {
+					intlist[order] = power(intlist[order], intlist[order + 1]); //power(n, m) = n^m;
+					intlist.erase(intlist.begin() + order + 1);
+				}
+				else if (formula[i + 1] == 'd') {
+					int orderd = order_of(formula, 'd', i + 1);
+					declist[orderd] = power(intlist[order], declist[orderd]); //power(n, m) = n^m;
+					intlist.erase(intlist.begin() + order);
+				}
+				else {
+					return 1;
+				}
 				formula.erase(i, 2);
 				i -= 2;
-				numlist.erase(numlist.begin() + order + 1);
+			}
+			else if (formula[i - 1] == 'd') {
+				int order = order_of(formula, 'd', i - 1);
+				if (formula[i + 1] == 'd') {
+					declist[order] = power(declist[order], declist[order + 1]); //power(n, m) = n^m;
+					declist.erase(declist.begin() + order + 1);
+				}
+				else if (formula[i + 1] == 'i') {
+					int orderi = order_of(formula, 'i', i + 1);
+					declist[order] = power(declist[order], intlist[orderi]); //power(n, m) = n^m;
+					intlist.erase(intlist.begin() + orderi);
+				}
+				else {
+					return 1;
+				}
+				formula.erase(i, 2);
+				i -= 2;
 			}
 			else {
 				return 1;
@@ -347,10 +484,10 @@ int posibility(string sign) {
 	return posibility;
 }
 
-int formula_sign(string& formula, vector<NumberObject>& numlist) {
+int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	if (formula[0] == '+' || formula[0] == '-') { //如--++-+n = -n
 		int i = 0;
-		while (formula[i] != 'n') {
+		while (formula[i] != 'd' && formula[i] != 'i') {
 			i++;
 		}
 		i--;
@@ -358,57 +495,139 @@ int formula_sign(string& formula, vector<NumberObject>& numlist) {
 			return 1;
 		}
 		else {
-			numlist[0].positive = numlist[0].positive * posibility(formula.substr(0, i));
+			if (formula[i + 1] == 'i') {
+				intlist[0].positive = intlist[0].positive * posibility(formula.substr(0, i));
+			}
+			else if (formula[i + 1] == 'd') {
+				declist[0].positive = declist[0].positive * posibility(formula.substr(0, i));
+			}
 		}
 		formula.erase(0, i);
 	}
+
 	for (int i = formula.size() - 1; i >= 1; i++) {
-		if (formula[i] == '+' || formula[i] == '-') { //n+--+++n = n+n
-			if (formula[i + 1] != 'n') {
+		if (formula[i] == '+' || formula[i] == '-') { //d+--+++i = d+i
+			if (formula[i + 1] != 'd' && formula[i + 1] != 'i') {
 				return 1;
 			}
 			int j = i;
-			while (j != 0 && formula[j - 1] == '+' || formula[j - 1] == '-') {
+			while (j > 0 && (formula[j - 1] == '+' || formula[j - 1] == '-')) {
 				j--;
 			}
-			int length = i - j; 
+			int length; 
+			if (formula[j - 1] == '*' || formula[j - 1] == '/') {
+				j--; // d/-----d j = 2
+			}
+			length = i - j;
+			
 			if (length > 0) {
-				int order = order_of_n(formula, i + 1);
-				if (posibility(formula.substr(j + 1, length)) == 0) {
-					return 1;
+				if (formula[i + 1] == 'i') {
+					int order = order_of(formula, 'i', i + 1);
+					if (posibility(formula.substr(j + 1, length)) == 0) {
+						return 1;
+					}
+					else {
+						intlist[order].positive = intlist[order].positive * posibility(formula.substr(j + 1, length));
+					}
+					formula.erase(j + 1, length);
+					i = j - 1;
+				}
+				else if (formula[i + 1] == 'd') {
+					int order = order_of(formula, 'd', i + 1);
+					if (posibility(formula.substr(j + 1, length)) == 0) {
+						return 1;
+					}
+					else {
+						declist[order].positive = declist[order].positive * posibility(formula.substr(j + 1, length));
+					}
+					formula.erase(j + 1, length);
+					i = j - 1;
 				}
 				else {
-					numlist[order].positive = numlist[order].positive * posibility(formula.substr(j + 1, length));
+					return 1;
 				}
-				formula.erase(j + 1, length);
-				i = j - 1;
 			}
 		}
 	}
 	return 0;
 }
 
-int formula_muldiv(string& formula, vector<NumberObject>& numlist) {
+int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '*') {
-			if (formula[i - 1] == 'n') {
-				int order = order_of_n(formula, i - 1);
-				numlist[order] = mul(numlist[order], numlist[order + 1]);
+			if (formula[i - 1] == 'i') {
+				int order = order_of(formula, 'i', i - 1);
+				if (formula[i + 1] == 'i') {
+					intlist[order] = intlist[order] * intlist[order + 1];
+					intlist.erase(intlist.begin() + order + 1);
+				}
+				else if (formula[i - 1] == 'd') {
+					int orderd = order_of(formula, 'd', i - 1);
+					declist[orderd] = intlist[order] * declist[orderd];
+					intlist.erase(intlist.begin() + order);
+				}
+				else {
+					return 1;
+				}
 				formula.erase(i, 2);
 				i -= 2;
-				numlist.erase(numlist.begin() + order + 1);
+			}
+			else if (formula[i - 1] == 'd') {
+				int order = order_of(formula, 'd', i - 1);
+				if (formula[i + 1] == 'd') {
+					declist[order] = declist[order] * declist[order + 1];
+					declist.erase(declist.begin() + order + 1);
+				}
+				else if (formula[i + 1] == 'i') {
+					int orderi = order_of(formula, 'i', i + 1);
+					declist[order] = declist[order] * intlist[orderi];
+					intlist.erase(intlist.begin() + orderi);
+				}
+				else {
+					return 1;
+				}
+				formula.erase(i, 2);
+				i -= 2;
+
 			}
 			else {
 				return 1;
 			}
 		}
-		if (formula[i] == '/') {
-			if (formula[i - 1] == 'n') {
-				int order = order_of_n(formula, i - 1);
-				numlist[order] = div(numlist[order], numlist[order + 1]);
+		else if (formula[i] == '/') {
+			if (formula[i - 1] == 'i') {
+				int order = order_of(formula, 'i', i - 1);
+				if (formula[i + 1] == 'i') {
+					intlist[order] = intlist[order] / intlist[order + 1];
+					intlist.erase(intlist.begin() + order + 1);
+				}
+				else if (formula[i - 1] == 'd') {
+					int orderd = order_of(formula, 'd', i - 1);
+					declist[orderd] = intlist[order] / declist[orderd];
+					intlist.erase(intlist.begin() + order);
+				}
+				else {
+					return 1;
+				}
 				formula.erase(i, 2);
 				i -= 2;
-				numlist.erase(numlist.begin() + order + 1);
+			}
+			else if (formula[i - 1] == 'd') {
+				int order = order_of(formula, 'd', i - 1);
+				if (formula[i + 1] == 'd') {
+					declist[order] = declist[order] / declist[order + 1];
+					declist.erase(declist.begin() + order + 1);
+				}
+				else if (formula[i + 1] == 'i') {
+					int orderi = order_of(formula, 'i', i + 1);
+					declist[order] = declist[order] / intlist[orderi];
+					intlist.erase(intlist.begin() + orderi);
+				}
+				else {
+					return 1;
+				}
+				formula.erase(i, 2);
+				i -= 2;
 			}
 			else {
 				return 1;
@@ -418,27 +637,82 @@ int formula_muldiv(string& formula, vector<NumberObject>& numlist) {
 	return 0;
 }
 
-int formula_addsub(string& formula, vector<NumberObject>& numlist) {
+int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '+') {
-			if (formula[i - 1] == 'n') {
-				int order = order_of_n(formula, i - 1);
-				numlist[order] = add(numlist[order], numlist[order + 1]);
+			if (formula[i - 1] == 'i') {
+				int order = order_of(formula, 'i', i - 1);
+				if (formula[i + 1] == 'i') {
+					intlist[order] = intlist[order] + intlist[order + 1];
+					intlist.erase(intlist.begin() + order + 1);
+				}
+				else if (formula[i - 1] == 'd') {
+					int orderd = order_of(formula, 'd', i - 1);
+					declist[orderd] = intlist[order] + declist[orderd];
+					intlist.erase(intlist.begin() + order);
+				}
+				else {
+					return 1;
+				}
 				formula.erase(i, 2);
 				i -= 2;
-				numlist.erase(numlist.begin() + order + 1);
+			}
+			else if (formula[i - 1] == 'd') {
+				int order = order_of(formula, 'd', i - 1);
+				if (formula[i + 1] == 'd') {
+					declist[order] = declist[order] + declist[order + 1];
+					declist.erase(declist.begin() + order + 1);
+				}
+				else if (formula[i + 1] == 'i') {
+					int orderi = order_of(formula, 'i', i + 1);
+					declist[order] = declist[order] + intlist[orderi];
+					intlist.erase(intlist.begin() + orderi);
+				}
+				else {
+					return 1;
+				}
+				formula.erase(i, 2);
+				i -= 2;
+
 			}
 			else {
 				return 1;
 			}
 		}
-		if (formula[i] == '-') {
-			if (formula[i - 1] == 'n') {
-				int order = order_of_n(formula, i - 1);
-				numlist[order] = sub(numlist[order], numlist[order + 1]);
+		else if (formula[i] == '-') {
+			if (formula[i - 1] == 'i') {
+				int order = order_of(formula, 'i', i - 1);
+				if (formula[i + 1] == 'i') {
+					intlist[order] = intlist[order] - intlist[order + 1];
+					intlist.erase(intlist.begin() + order + 1);
+				}
+				else if (formula[i - 1] == 'd') {
+					int orderd = order_of(formula, 'd', i - 1);
+					declist[orderd] = intlist[order] - declist[orderd];
+					intlist.erase(intlist.begin() + order);
+				}
+				else {
+					return 1;
+				}
 				formula.erase(i, 2);
 				i -= 2;
-				numlist.erase(numlist.begin() + order + 1);
+			}
+			else if (formula[i - 1] == 'd') {
+				int order = order_of(formula, 'd', i - 1);
+				if (formula[i + 1] == 'd') {
+					declist[order] = declist[order] - declist[order + 1];
+					declist.erase(declist.begin() + order + 1);
+				}
+				else if (formula[i + 1] == 'i') {
+					int orderi = order_of(formula, 'i', i + 1);
+					declist[order] = declist[order] - intlist[orderi];
+					intlist.erase(intlist.begin() + orderi);
+				}
+				else {
+					return 1;
+				}
+				formula.erase(i, 2);
+				i -= 2;
 			}
 			else {
 				return 1;
