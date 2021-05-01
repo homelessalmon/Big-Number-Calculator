@@ -324,6 +324,79 @@ Integer factorial(const Integer& num)
     return s;
 }
 
+Integer power(const Integer& base, const Integer& exp)
+{
+    Integer s = base, temp = exp, one; one.number = "1";
+    if (exp.number == "0" || exp.positive == -1) { Integer tmp; tmp.number = "1"; return tmp; }
+    while (temp.number != "1") { s = s * base; temp = temp - one; }
+    return s;
+}
+
+Integer power(const Integer& base, const Decimal& exp)
+{
+    Decimal b, e = exp, one, two, zero; b.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + base.number;
+    zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
+    if (exp.number == zero.number) { return one; }
+    if (b.number == "0") { return zero; }
+    if (exp.positive == -1) { return zero; }
+
+    bool check = false;
+    for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
+    if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
+    if (check) { Decimal X; X.positive = 3; return X; }
+
+    if (exp.number[99] == '5')
+    {
+        if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
+        e = e * two;
+        Decimal re = b;
+        while (e.number != one.number)
+        {
+            re = re * base;
+            e = e - one;
+        }
+        Decimal next, now = re / two; next.number = "0";
+        while (next.number != now.number)
+        {
+            next = ((now * now) + re) / (two * now);
+            swap(next, now);
+        }
+        if (exp.positive == -1)
+        {
+            return one / now;
+        }
+        else
+        {
+            if (exp.positive == 1)
+            {
+                return now;
+            }
+        }
+    }
+    else
+    {
+        Decimal re = b;
+
+        while (e.number != one.number)
+        {
+            re = re * base;
+            e = e - one;
+        }
+        if (exp.positive == -1)
+        {
+            return one / re;
+        }
+        else
+        {
+            if (exp.positive == 1)
+            {
+                return re;
+            }
+        }
+    }
+
+}
+
 
 void Integer::operator=(const NumberObject& input) {
     number = input.number;
@@ -1120,6 +1193,88 @@ Decimal factorial(const Decimal& num)
         now = now - one;
     }
     return s;
+}
+
+Decimal power(const Decimal& base, const Integer& exp)
+{
+    Decimal zero, one; zero.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+    if (exp.number == "0") { return one; }
+    if (base.number == zero.number) { return zero; }
+    Decimal re = base; Integer tmp = exp;
+    while (tmp.number != "1") { re = re * base; tmp = tmp - one; }
+    if (exp.positive == 1)
+    {
+        return re;
+    }
+    else
+    {
+        if (exp.positive == -1)
+        {
+            return one / re;
+        }
+    }
+}
+
+Decimal power(const Decimal& base, const Decimal& exp)
+{
+    Decimal b = base, e = exp, one, two, zero;
+    zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
+    if (exp.number == zero.number) { return one; }
+    if (b.number == zero.number) { return zero; }
+
+    bool check = false;
+    for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
+    if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
+    if (check) { Decimal X; X.positive = 3; return X; }
+    
+    if (exp.number[99] == '5')
+    {
+        if(base.positive==-1){ Decimal X; X.positive = 3; return X; }
+        e = e * two;
+        Decimal re = base;
+        while (e.number != one.number)
+        {
+            re = re * base;
+            e = e - one;
+        }
+        Decimal next, now = re / two; next.number = "0";
+        while (next.number != now.number)
+        {
+            next = ((now * now) + re) / (two * now);
+            swap(next, now);
+        }
+        if (exp.positive == -1)
+        {
+            return one / now;
+        }
+        else
+        {
+            if (exp.positive == 1)
+            {
+                return now;
+            }
+        }
+    }
+    else
+    {
+        Decimal re = base;
+        while (e.number != one.number)
+        {
+            re = re * base;
+            e = e - one;
+        }
+        if (exp.positive == -1)
+        {
+            return one / re;
+        }
+        else
+        {
+            if (exp.positive == 1)
+            {
+                return re;
+            }
+        }
+    }
 }
 
 void Decimal::operator=(const NumberObject& input) {
