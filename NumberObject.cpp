@@ -1003,3 +1003,9 @@ Decimal::operator Integer()
     tmp.number = str.substr(100);
     return tmp;
 }
+
+NumberObject::NumberObject(int error_code) {
+    positive = error_code;
+    number = "";
+    point_index = 0;
+}
