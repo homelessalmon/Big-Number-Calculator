@@ -29,6 +29,8 @@ public:
 	//function
 	friend ostream& operator>>(iostream&, NumberObject&);
 	friend ostream& operator<<(ostream&, NumberObject);
+	operator Integer();
+	operator Decimal();
 };
 
 class Integer : public NumberObject
