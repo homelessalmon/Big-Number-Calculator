@@ -12,7 +12,7 @@ ostream& operator<<(ostream& io, NumberObject num)
         {
             string temp = num.number;
             reverse(temp.begin(), temp.end());
-            io << temp << endl;
+            io << temp;
             return io;
         }
         else
@@ -21,7 +21,7 @@ ostream& operator<<(ostream& io, NumberObject num)
             {
                 string temp = num.number;
                 reverse(temp.begin(), temp.end());
-                io << "-" << temp << endl;
+                io << "-" << temp;
                 return io;
             }
         }
@@ -40,7 +40,6 @@ ostream& operator<<(ostream& io, NumberObject num)
                 }
                 io << temp[i];
             }
-            io << endl;
             return io;
         }
         else
@@ -59,7 +58,6 @@ ostream& operator<<(ostream& io, NumberObject num)
                     }
                     io << temp[i];
                 }
-                io << endl;
                 return io;
             }
         }
