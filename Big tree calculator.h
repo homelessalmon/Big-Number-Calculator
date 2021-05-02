@@ -14,7 +14,7 @@ public:
 	//function
 	void exe();
 	void string_process(string);
-	NumberObject value_process(string input);
+	Decimal value_process(string input);
 	friend void string_segmentation(string, vector<string>&, string, char);
 	friend int order_of(const string&, char, int);
 	friend int formula_factorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist);
