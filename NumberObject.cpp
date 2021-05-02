@@ -4,64 +4,52 @@ using namespace std;
 
 //NumberObject
 
-ostream& operator<<(ostream& io, NumberObject num)
-{
-    if (num.point_index == 0)
-    {
-        if (num.positive == 1)
-        {
-            string temp = num.number;
-            reverse(temp.begin(), temp.end());
-            io << temp;
-            return io;
-        }
-        else
-        {
-            if (num.positive == -1)
-            {
-                string temp = num.number;
-                reverse(temp.begin(), temp.end());
-                io << "-" << temp;
-                return io;
-            }
-        }
-    }
-    else
-    {
-        if (num.positive == 1)
-        {
-            string temp = num.number;
-            reverse(temp.begin(), temp.end());
-            for (int i = 0; i < temp.length(); i++)
-            {
-                if (temp.length() - i == 100)
-                {
-                    cout << '.';
-                }
-                io << temp[i];
-            }
-            return io;
-        }
-        else
-        {
-            if (num.positive == -1)
-            {
-                string temp = num.number;
-                int c = temp.length();
-                reverse(temp.begin(), temp.end());
-                io << "-";
-                for (int i = 0; i < temp.length(); i++)
-                {
-                    if (temp.length() - i == 100)
-                    {
-                        cout << '.';
-                    }
-                    io << temp[i];
-                }
-                return io;
-            }
-        }
-    }
+ostream& operator<<(ostream& io, NumberObject num) {
+	if (num.positive != 1 && num.positive != -1) {
+		cout << "errorcode:" << num.positive;
+	}
+	if (num.point_index == 0) {
+		if (num.positive == 1) {
+			string temp = num.number;
+			reverse(temp.begin(), temp.end());
+			io << temp;
+			return io;
+		}
+		else {
+			if (num.positive == -1) {
+				string temp = num.number;
+				reverse(temp.begin(), temp.end());
+				io << "-" << temp;
+				return io;
+			}
+		}
+	}
+	else {
+		if (num.positive == 1) {
+			string temp = num.number;
+			reverse(temp.begin(), temp.end());
+			for (int i = 0; i < temp.length(); i++) {
+				if (temp.length() - i == 100) {
+					cout << '.';
+				}
+				io << temp[i];
+			}
+			return io;
+		}
+		else if (num.positive == -1) {
+			string temp = num.number;
+			int c = temp.length();
+			reverse(temp.begin(), temp.end());
+			io << "-";
+			for (int i = 0; i < temp.length(); i++) {
+				if (temp.length() - i == 100) {
+					cout << '.';
+				}
+				io << temp[i];
+			}
+			return io;
+		}
+	}
 }
 
 //NumberObject::operator Integer()
