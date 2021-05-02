@@ -64,21 +64,21 @@ ostream& operator<<(ostream& io, NumberObject num)
     }
 }
 
-NumberObject::operator Integer()
-{
-    Integer tmp;
-    tmp.number = this->number;
-    tmp.positive = this->positive;
-    return tmp;
-}
-
-NumberObject::operator Decimal()
-{
-    Decimal tmp;
-    tmp.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + number;
-    tmp.positive = positive;
-    return tmp;
-}
+//NumberObject::operator Integer()
+//{
+//    Integer tmp;
+//    tmp.number = this->number;
+//    tmp.positive = this->positive;
+//    return tmp;
+//}
+//
+//NumberObject::operator Decimal()
+//{
+//    Decimal tmp;
+//    tmp.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + number;
+//    tmp.positive = 1;
+//    return tmp;
+//}
 
 //int
 
@@ -151,7 +151,18 @@ Integer operator-(const Integer& n1, const Integer& n2)
     vector<int> ans;
     num1 = n1.number;
     num2 = n2.number;
-
+    if (n1.positive == -1 && n2.positive == 1) {
+        Integer n3 = n1 + n2;
+        n3 = -n3;
+        return n3;
+    }
+    else if (n2.positive == -1 && n1.positive == 1) {
+        Integer n3 = n1 + n2;
+        return n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        return n2 - n1;
+    }
     //check if the answer is positive
     if (num1.length() > num2.length()) {}
     else if (num2.length() > num1.length()) {
@@ -1319,8 +1330,8 @@ Decimal::operator Integer()
     return tmp;
 }
 
-NumberObject::NumberObject(int error_code) {
-    positive = error_code;
+NumberObject::NumberObject() {
+    positive = -128;
     number = "";
     point_index = 0;
 }
