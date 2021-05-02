@@ -519,8 +519,8 @@ Integer power(const Integer& base, const Decimal& exp)
 
 bool operator >(const Integer& num1, const Integer& num2)
 {
-    if (num1.number == num2.number) { return false; }
     if (num2.positive > num1.positive) { return false; }
+    if (num1.number == num2.number) { return false; }
     else if (num2.number.length() > num1.number.length()) { return false; }
     else
     {
@@ -529,18 +529,19 @@ bool operator >(const Integer& num1, const Integer& num2)
         {
             for (int i = num1.number.length(); i > -1; i--)
             {
-                if (num1.number[i] < num2.number[i]) { return false; }
+                if (num1.number[i] > num2.number[i]) { return true; }
             }
         }
     }
-    return true;
+    return false;
 }
 
 bool operator >=(const Integer& num1, const Integer& num2)
 {
-    if (num1.number == num2.number) { return true; }
     if (num2.positive > num1.positive) { return false; }
-    else if (num2.number.length() > num1.number.length()) { return false; }
+    if (num1.number == num2.number) { return true; }
+
+    if (num2.number.length() > num1.number.length()) { return false; }
     else
     {
         if (num1.number.length() > num2.number.length()) { return true; }
@@ -548,16 +549,16 @@ bool operator >=(const Integer& num1, const Integer& num2)
         {
             for (int i = num1.number.length() - 1; i > -1; i--)
             {
-                if (num1.number[i] < num2.number[i]) { return false; }
+                if (num1.number[i] > num2.number[i]) { return true; }
             }
         }
     }
-    return true;
+    return false;
 }
 
 Integer operator%(const Integer& num1, const Integer& num2)
 {
-    Integer n1 = num1, zero; bool check = false; zero.number = "0";
+    Integer n1 = num1;
     if (num2 > num1) { return num1; }
     while (n1 >= num2) { n1 = n1 - num2; }
     return n1;
@@ -793,6 +794,22 @@ Decimal operator-(const Decimal& n1, const Integer& n2)
 
 Decimal operator*(const Decimal& num1, const Integer& num2)
 {
+    if (num1.positive == -1 && num2.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Integer n3 = num2; n3 = -n3;
+        return n2 * n3;
+    }
+    else if (num1.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Decimal n3 = n2 * num2;
+        return -n3;
+    }
+    else if (num2.positive == -1) {
+        Integer n2 = num2; n2 = -n2;
+        Decimal n3 = num1 * n2;
+        return -n3;
+    }
+
     Decimal a;
     a.numerator = num1.numerator * num2;
     a.denominator = num1.denominator;
@@ -804,6 +821,22 @@ Decimal operator*(const Decimal& num1, const Integer& num2)
 
 Decimal operator/(const Decimal& num1, const Integer& num2)
 {
+    if (num1.positive == -1 && num2.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Integer n3 = num2; n3 = -n3;
+        return n2 / n3;
+    }
+    else if (num1.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Decimal n3 = n2 / num2;
+        return -n3;
+    }
+    else if (num2.positive == -1) {
+        Integer n2 = num2; n2 = -n2;
+        Decimal n3 = num1 / n2;
+        return -n3;
+    }
+
     Decimal a;
     a.numerator = num1.numerator;
     a.denominator = num1.denominator * num2;
@@ -974,6 +1007,22 @@ Decimal operator-(const Integer& n1, const Decimal& n2)
 
 Decimal operator*(const Integer& num1, const Decimal& num2)
 {
+    if (num1.positive == -1 && num2.positive == -1) {
+        Integer n2 = num1; n2 = -n2;
+        Decimal n3 = num2; n3 = -n3;
+        return n2 * n3;
+    }
+    else if (num1.positive == -1) {
+        Integer n2 = num1; n2 = -n2;
+        Decimal n3 = n2 * num2;
+        return -n3;
+    }
+    else if (num2.positive == -1) {
+        Decimal n2 = num2; n2 = -n2;
+        Decimal n3 = num1 * n2;
+        return -n3;
+    }
+
     Decimal a;
     a.numerator = num1 * num2.numerator;
     a.denominator = num2.denominator;
@@ -985,6 +1034,22 @@ Decimal operator*(const Integer& num1, const Decimal& num2)
 
 Decimal operator/(const Integer& num1, const Decimal& num2)
 {
+    if (num1.positive == -1 && num2.positive == -1) {
+        Integer n2 = num1; n2 = -n2;
+        Decimal n3 = num2; n3 = -n3;
+        return n2 / n3;
+    }
+    else if (num1.positive == -1) {
+        Integer n2 = num1; n2 = -n2;
+        Decimal n3 = n2 / num2;
+        return -n3;
+    }
+    else if (num2.positive == -1) {
+        Decimal n2 = num2; n2 = -n2;
+        Decimal n3 = num1 / n2;
+        return -n3;
+    }
+
     Decimal a;
     a.numerator = num2.numerator;
     a.denominator = num1 * num2.denominator;
@@ -1155,6 +1220,22 @@ Decimal operator-(const Decimal& n1, const Decimal& n2)
 
 Decimal operator*(const Decimal& num1, const Decimal& num2)
 {
+    if (num1.positive == -1 && num2.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Decimal n3 = num2; n3 = -n3;
+        return n2 * n3;
+    }
+    else if (num1.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Decimal n3 = n2 * num2;
+        return -n3;
+    }
+    else if (num2.positive == -1) {
+        Decimal n2 = num2; n2 = -n2;
+        Decimal n3 = num1 * n2;
+        return -n3;
+    }
+
     Decimal a;
     a.numerator = num1.numerator * num2.numerator;
     a.denominator = num1.denominator * num2.denominator;
@@ -1166,6 +1247,22 @@ Decimal operator*(const Decimal& num1, const Decimal& num2)
 
 Decimal operator/(const Decimal& num1, const Decimal& num2)
 {
+    if (num1.positive == -1 && num2.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Decimal n3 = num2; n3 = -n3;
+        return n2 / n3;
+    }
+    else if (num1.positive == -1) {
+        Decimal n2 = num1; n2 = -n2;
+        Decimal n3 = n2 / num2;
+        return -n3;
+    }
+    else if (num2.positive == -1) {
+        Decimal n2 = num2; n2 = -n2;
+        Decimal n3 = num1 / n2;
+        return -n3;
+    }
+
     Decimal a;
     a.numerator = num1.numerator * num2.denominator;
     a.denominator = num1.denominator * num2.numerator;
