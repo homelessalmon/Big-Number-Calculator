@@ -345,6 +345,11 @@ Integer operator*(const Integer& num1, const Integer& num2) {
 }
 
 Integer operator/(const Integer& num1, const Integer& num2) {
+	if (num2.number == "0") {
+		Decimal error;
+		error.positive = 4;
+		return error;
+	}
 	Decimal n1, n2;
 	n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
 	n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
@@ -759,6 +764,11 @@ Decimal operator*(const Decimal& num1, const Integer& num2) {
 }
 
 Decimal operator/(const Decimal& num1, const Integer& num2) {
+	if (num2.number == "0") {
+		Decimal error;
+		error.positive = 4;
+		return error;
+	}
 	if (num1.positive == -1 && num2.positive == -1) {
 		Decimal n2 = num1; n2 = -n2;
 		Integer n3 = num2; n3 = -n3;
@@ -968,6 +978,11 @@ Decimal operator*(const Integer& num1, const Decimal& num2) {
 }
 
 Decimal operator/(const Integer& num1, const Decimal& num2) {
+	if (num2.numerator.number == "0") {
+		Decimal error;
+		error.positive = 4;
+		return error;
+	}
 	if (num1.positive == -1 && num2.positive == -1) {
 		Integer n2 = num1; n2 = -n2;
 		Decimal n3 = num2; n3 = -n3;
@@ -1177,6 +1192,11 @@ Decimal operator*(const Decimal& num1, const Decimal& num2) {
 }
 
 Decimal operator/(const Decimal& num1, const Decimal& num2) {
+	if (num2.numerator.number == "0") {
+		Decimal error;
+		error.positive = 4;
+		return error;
+	}
 	if (num1.positive == -1 && num2.positive == -1) {
 		Decimal n2 = num1; n2 = -n2;
 		Decimal n3 = num2; n3 = -n3;
