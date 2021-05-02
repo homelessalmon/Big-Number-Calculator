@@ -401,19 +401,10 @@ void Big_tree_calculator::string_process(string input) {
 			variableList.push_pack(input_seg[1], integer);
 		}
 		else {
-			NumberObject temp = value_process(input_seg[3]);
-			if (temp.point_index == 0) {
-				Integer integer;
-				integer = temp;
-				variableList.push_pack(input_seg[1], integer);
-			}
-			else {
-				Decimal decimal;
-				decimal = temp;
-				Integer integer;
-				integer = decimal;
-				variableList.push_pack(input_seg[1], integer);
-			}
+			Decimal temp = value_process(input_seg[3]);
+			Integer integer;
+			integer = temp;
+			variableList.push_pack(input_seg[1], integer);
 		}
 	}
 	else if (input_seg[0] == "Decimal") {
@@ -435,17 +426,15 @@ void Big_tree_calculator::string_process(string input) {
 		}
 	}
 	else if (input_seg.size() > 1 && input_seg[1] == "=") {
-		NumberObject temp = value_process(input_seg[2]);
+		Decimal temp = value_process(input_seg[2]);
 		int v = variableList.find(input_seg[0]);
-		if (v >= 0 && v <= 100) {
+		if (v >= 0 && v < 100) {
 			if (temp.point_index == 0) {
 				variableList.Number_I[v] = temp;
 			}
 			else {
-				Decimal decimal;
-				decimal = temp;
 				Integer integer;
-				integer = decimal;
+				integer = temp;
 				variableList.Number_I[v] = integer;
 			}
 		}
@@ -454,11 +443,8 @@ void Big_tree_calculator::string_process(string input) {
 				variableList.Number_D[v - 100] = temp;
 			}
 			else {
-				Integer integer;
-				integer = temp;
-				Decimal decimal;
-				decimal = integer;
-				variableList.Number_D[v - 100] = decimal;
+				temp.point_index = 1;
+				variableList.Number_D[v - 100] = temp;
 			}
 		}
 		else {
@@ -587,11 +573,11 @@ Decimal Big_tree_calculator::value_process(string input) {
 			end = cur;
 			int length = end - begin;
 			int v = variableList.find(input.substr(begin, length));
-			if (v >= 0 && v <= 100) {
+			if (v >= 0 && v < 100) {
 				num_int.push_back(variableList.Number_I[v]);
 				formula = formula + 'i';
 			}
-			else if (v > 100) {
+			else if (v >= 100) {
 				num_dec.push_back(variableList.Number_D[v - 100]);
 				formula = formula + 'd';
 			}
