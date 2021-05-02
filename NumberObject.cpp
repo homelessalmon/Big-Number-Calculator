@@ -444,6 +444,71 @@ Integer power(const Integer& base, const Decimal& exp)
 
 }
 
+bool operator >(const Integer& num1, const Integer& num2)
+{
+    if (num1.number == num2.number) { return false; }
+    if (num2.positive > num1.positive) { return false; }
+    else if (num2.number.length() > num1.number.length()) { return false; }
+    else
+    {
+        if (num1.number.length() > num2.number.length()) { return true; }
+        else
+        {
+            for (int i = num1.number.length(); i > -1; i--)
+            {
+                if (num1.number[i] < num2.number[i]) { return false; }
+            }
+        }
+    }
+    return true;
+}
+
+bool operator >=(const Integer& num1, const Integer& num2)
+{
+    if (num1.number == num2.number) { return true; }
+    if (num2.positive > num1.positive) { return false; }
+    else if (num2.number.length() > num1.number.length()) { return false; }
+    else
+    {
+        if (num1.number.length() > num2.number.length()) { return true; }
+        else
+        {
+            for (int i = num1.number.length() - 1; i > -1; i--)
+            {
+                if (num1.number[i] < num2.number[i]) { return false; }
+            }
+        }
+    }
+    return true;
+}
+
+Integer operator%(const Integer& num1, const Integer& num2)
+{
+    Integer n1 = num1, zero; bool check = false; zero.number = "0";
+    if (num2 > num1) { return num1; }
+    while (n1 >= num2) { n1 = n1 - num2; }
+    return n1 ;
+}
+
+Integer gcd(const Integer& num1, const Integer& num2)
+{
+    Integer n1 = num1, n2 = num2;
+    if (n2.number == "0")
+    {
+        return n1;
+    }
+    else
+    {
+        return gcd(n2, n1 % n2);
+    }
+}
+
+Integer lcm(const Integer& num1, const Integer& num2)
+{
+    Integer re = num1 * num2;
+    re = re / gcd(num1, num2);
+    return re;
+}
 
 void Integer::operator=(const NumberObject& input) {
     number = input.number;
