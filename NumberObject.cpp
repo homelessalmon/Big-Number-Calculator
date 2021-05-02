@@ -542,18 +542,22 @@ void Integer::operator=(const NumberObject& input) {
 	point_index = input.point_index;
 }
 
-Integer Integer::operator-() {
+Integer Integer::operator-()
+{
 	if (this->number != "0") {
 		this->positive *= -1;
 	}
 	return *this;
 }
 
-Integer::operator Decimal() {
+Integer::operator Decimal()
+{
 	Decimal temp;
-	string str = this->number;
+	temp.numerator = *this;
+	temp.denominator.positive = 1;
+	temp.denominator.number = "1";
 	temp.positive = this->positive;
-	temp.number = str.insert(0, 100, '0');
+	temp.number = divide(temp.numerator, temp.denominator);
 	return temp;
 }
 
@@ -1315,15 +1319,18 @@ void Decimal::operator=(const NumberObject& input) {
 	point_index = input.point_index;
 }
 
-Decimal Decimal::operator-() {
+Decimal Decimal::operator-()
+{
 	if (this->number != "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
 		this->positive *= -1;
 	}
 	return *this;
 }
 
-Decimal::operator Integer() {
+Decimal::operator Integer()
+{
 	Integer tmp;
+	this->number = divide(numerator, denominator);
 	string str = this->number;
 	if (str.back() == '0')
 		tmp.positive = 1;
@@ -1333,7 +1340,8 @@ Decimal::operator Integer() {
 	return tmp;
 }
 
-NumberObject::NumberObject() {
+NumberObject::NumberObject()
+{
 	positive = -128;
 	number = "";
 	point_index = 0;
