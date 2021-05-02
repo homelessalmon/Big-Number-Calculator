@@ -353,6 +353,7 @@ Integer operator/(const Integer& num1, const Integer& num2)
 
 Integer factorial(const Integer& num)
 {
+	if (num.positive != -1 && num.positive != 1) { Integer X; X.positive = 2; return X; }
     Integer one; one.number = "1";
     Integer s = one, now = num;
     if (num.number == "0")
@@ -1316,6 +1317,7 @@ Decimal operator/(const Decimal& num1, const Decimal& num2)
 
 Decimal factorial(const Decimal& num)
 {
+	if (num.positive != -1 && num.positive != 1) { Decimal X; X.positive = 2; return X; }
     bool check = false;
     for_each(num.number.begin(), num.number.begin() + 99, [&check](char w) {if (w != '0') { check = true; }});
     if (check)
@@ -1338,6 +1340,7 @@ Decimal factorial(const Decimal& num)
 
 Decimal power(const Decimal& base, const Integer& exp)
 {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
     Decimal zero, one; zero.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
     if (exp.number == "0") { return one; }
     if (base.number == zero.number) { return zero; }
@@ -1358,6 +1361,7 @@ Decimal power(const Decimal& base, const Integer& exp)
 
 Decimal power(const Decimal& base, const Decimal& exp)
 {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
     Decimal b = base, e = exp, one, two, zero;
     zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
     if (exp.number == zero.number) { return one; }
