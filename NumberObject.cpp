@@ -538,40 +538,19 @@ Integer::operator Decimal()
 
 Decimal::Decimal()
 {
-    point_index = 1; positive = 1;
+    numerator.number = "0";
+    denominator.number = "1";
+    point_index = 1; 
+    positive = 1;
 }
 
 Decimal::Decimal(const Decimal& reference)
 {
+    numerator = reference.numerator;
+    denominator = reference.denominator;
     number = reference.number;
     point_index = reference.point_index;
     positive = reference.positive;
-}
-
-bool operator>(const Decimal& n1, const Decimal& n2)
-{
-    if (n1.positive == -1 && n2.positive == 1)
-    {
-        return false;
-    }
-    if (n1.number.length() > n2.number.length())
-    {
-        return true;
-    }
-    else if (n1.number.length() < n2.number.length())
-    {
-        return false;
-    }
-    else {
-        for (int i = n1.number.length() - 1; i >= 0; i--)
-        {
-            if (n2.number[i] > n1.number[i])
-            {
-                return false;
-            }
-        }
-    }
-    return true;
 }
 
 Decimal operator+(const Decimal& n1, const Integer& n2)
