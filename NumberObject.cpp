@@ -565,6 +565,7 @@ Decimal::Decimal() {
 	denominator.number = "1";
 	point_index = 1;
 	positive = 1;
+	number = divide(numerator, denominator);
 }
 
 Decimal::Decimal(const Decimal& reference) {
@@ -573,6 +574,7 @@ Decimal::Decimal(const Decimal& reference) {
 	number = reference.number;
 	point_index = reference.point_index;
 	positive = reference.positive;
+	number = divide(numerator, denominator);
 }
 
 void reduct_fraction(Integer& numerator, Integer& denominator) {
