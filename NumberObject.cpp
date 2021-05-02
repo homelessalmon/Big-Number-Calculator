@@ -552,7 +552,6 @@ Decimal::Decimal(const Decimal& reference)
     point_index = reference.point_index;
     positive = reference.positive;
 }
-
 Decimal operator+(const Decimal& n1, const Integer& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
@@ -574,8 +573,8 @@ Decimal operator+(const Decimal& n1, const Integer& n2)
         return -n5;
     }
 
-    string num1 = n1.number, num2 = n2.number;
-    num2.insert(0, 100, '0');
+    Integer num = n1.denominator * n2;
+    string num1 = n1.numerator.number, num2 = num.number;
     vector<int>ans;
 
     int num1_len = num1.length(), num2_len = num2.length();
@@ -613,32 +612,40 @@ Decimal operator+(const Decimal& n1, const Integer& n2)
     }
 
     Decimal a;
-    a.number = temp;
-    a.positive = 1;
+    a.numerator.number = temp;
+    a.denominator = n1.denominator;
+    a.number = divide(a.numerator, a.denominator);
+    a.positive = a.numerator.positive;
+
     return a;
 }
 
 Decimal operator-(const Decimal& n1, const Integer& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
-        Decimal n3 = n1 + n2;
+        Decimal n3 = n1;
         n3 = -n3;
-        return n3;
+        Decimal n4 = n3 + n2;
+        return -n4;
     }
     else if (n1.positive == 1 && n2.positive == -1) {
-        Decimal n3 = n1 + n2;
-        return n3;
+        Integer n3 = n2;
+        n3 = -n3;
+        Decimal n4 = n3 + n1;
+        return n4;
     }
     else if (n1.positive == -1 && n2.positive == -1) {
-        return n2 - n1;
+        Decimal n3 = n1;
+        Integer n4 = n2;
+        n3 = -n3;
+        n4 = -n4;
+        return n4 - n3;
     }
 
     Decimal a;
-    string num1, num2;
+    Integer num = n1.denominator * n2;
     vector<int> ans;
-    num1 = n1.number;
-    num2 = n2.number;
-    num2.insert(0, 100, '0');
+    string num1 = n1.numerator.number, num2 = num.number;
 
     //check if the answer is positive
     if (num1.length() > num2.length()) {}
@@ -694,13 +701,23 @@ Decimal operator-(const Decimal& n1, const Integer& n2)
         temp.append(1, (char)(ans[i] + '0'));
     }
 
-    a.number = temp;
+    a.numerator.number = temp;
+    a.denominator = n1.denominator;
+    a.number = divide(a.numerator, a.denominator);
     return a;
 }
 
 Decimal operator*(const Decimal& num1, const Integer& num2)
 {
-    string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    Decimal a;
+    a.numerator = num1.numerator * num2;
+    a.denominator = num1.denominator;
+    a.positive = num1.positive * num2.positive;
+    //約分
+    a.number = divide(a.numerator, a.denominator);
+    return a;
+
+    /*string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
     if (num1.number == zero || num2.number == "0") {
         Decimal A;
         A.number = zero;
@@ -743,12 +760,20 @@ Decimal operator*(const Decimal& num1, const Integer& num2)
     }
     re.positive = num1.positive * num2.positive;
     re.number = re.number.substr(100);
-    return re;
+    return re;*/
 }
 
 Decimal operator/(const Decimal& num1, const Integer& num2)
 {
-    Decimal n1 = num1, n2; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
+    Decimal a;
+    a.numerator = num1.numerator;
+    a.denominator = num1.denominator * num2;
+    a.positive = num1.positive * num2.positive;
+    //
+    a.number = divide(a.numerator, a.denominator);
+    return a;
+
+    /*Decimal n1 = num1, n2; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
     if (num1.number == t)
@@ -818,7 +843,7 @@ Decimal operator/(const Decimal& num1, const Integer& num2)
     Decimal temp;
     temp.number = t;
     temp.positive = num1.positive * num2.positive;
-    return temp;
+    return temp;*/
 }
 
 Decimal operator+(const Integer& n1, const Decimal& n2)
@@ -842,8 +867,8 @@ Decimal operator+(const Integer& n1, const Decimal& n2)
         return -n5;
     }
 
-    string num1 = n1.number, num2 = n2.number;
-    num1.insert(0, 100, '0');
+    Integer num = n2.denominator * n1;
+    string num1 = num.number, num2 = n2.numerator.number;
     vector<int>ans;
 
     int num1_len = num1.length(), num2_len = num2.length();
@@ -881,32 +906,39 @@ Decimal operator+(const Integer& n1, const Decimal& n2)
     }
 
     Decimal a;
-    a.number = temp;
-    a.positive = 1;
+    a.numerator.number = temp;
+    a.denominator = n2.denominator;
+    a.number = divide(a.numerator, a.denominator);
+    a.positive = a.numerator.positive;
     return a;
 }
 
 Decimal operator-(const Integer& n1, const Decimal& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
-        Decimal n3 = n1 + n2;
+        Integer n3 = n1;
         n3 = -n3;
-        return n3;
+        Decimal n4 = n3 + n2;
+        return -n4;
     }
     else if (n1.positive == 1 && n2.positive == -1) {
-        Decimal n3 = n1 + n2;
-        return n3;
+        Decimal n3 = n2;
+        n3 = -n3;
+        Decimal n4 = n3 + n1;
+        return n4;
     }
     else if (n1.positive == -1 && n2.positive == -1) {
-        return n2 - n1;
+        Integer n3 = n1;
+        Decimal n4 = n2;
+        n3 = -n3;
+        n4 = -n4;
+        return n4 - n3;
     }
 
     Decimal a;
-    string num1, num2;
+    Integer num = n2.denominator * n1;
     vector<int> ans;
-    num1 = n1.number;
-    num2 = n2.number;
-    num1.insert(0, 100, '0');
+    string num1 = num.number, num2 = n2.numerator.number;
 
     //check if the answer is positive
     if (num1.length() > num2.length()) {}
@@ -962,13 +994,23 @@ Decimal operator-(const Integer& n1, const Decimal& n2)
         temp.append(1, (char)(ans[i] + '0'));
     }
 
-    a.number = temp;
+    a.numerator.number = temp;
+    a.denominator = n2.denominator;
+    a.number = divide(a.numerator, a.denominator);
+    a.positive = a.numerator.positive;
     return a;
 }
 
 Decimal operator*(const Integer& num1, const Decimal& num2)
 {
-    string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    Decimal a;
+    a.numerator = num1 * num2.numerator;
+    a.denominator = num2.denominator;
+    a.positive = num1.positive * num2.positive;
+    //約分
+    a.number = divide(a.numerator, a.denominator);
+    return a;
+    /*string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
     if (num1.number == "0" || num2.number == zero) {
         Decimal A;
         A.number = zero;
@@ -1011,12 +1053,19 @@ Decimal operator*(const Integer& num1, const Decimal& num2)
     }
     re.positive = num1.positive * num2.positive;
     re.number = re.number.substr(100);
-    return re;
+    return re;*/
 }
 
 Decimal operator/(const Integer& num1, const Decimal& num2)
 {
-    Decimal n1, n2 = num2; n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number;
+    Decimal a;
+    a.numerator = num2.numerator;
+    a.denominator = num1 * num2.denominator;
+    a.positive = num1.positive * num2.positive;
+    //
+    a.number = divide(a.numerator, a.denominator);
+    return a;
+    /*Decimal n1, n2 = num2; n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
     if (num1.number == "0")
@@ -1086,7 +1135,7 @@ Decimal operator/(const Integer& num1, const Decimal& num2)
     Decimal temp;
     temp.number = t;
     temp.positive = num1.positive * num2.positive;
-    return temp;
+    return temp;*/
 }
 
 Decimal operator+(const Decimal& n1, const Decimal& n2)
