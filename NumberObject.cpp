@@ -102,23 +102,24 @@ Integer::Integer(const Integer& reference)
 Integer operator+(const Integer& n1, const Integer& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
-		Integer n3 = n1;
-		n3 = -n3;
-		return n2 - n3;
-	}
-	else if (n2.positive == -1 && n1.positive == 1) {
-		Integer n3 = n2;
-		n3 = -n3;
-		return n1 - n3;
-	}
-	else if (n2.positive == -1 && n1.positive == -1) {
-		Integer n3 = n1;
-		Integer n4 = n2;
-		n3 = -n3;
-		n4 = -n4;
-		Integer n5 = n3 + n4;
-		return -n5;
-	}
+        Integer n3 = n1;
+        n3 = -n3;
+        return n2 - n3;
+    }
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Integer n3 = n2;
+        n3 = -n3;
+        return n1 - n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        Integer n3 = n1;
+        Integer n4 = n2;
+        n3 = -n3;
+        n4 = -n4;
+        Integer n5 = n3 + n4;
+        return -n5;
+    }
+
     string num1 = n1.number, num2 = n2.number;
     vector<int>ans;
 
@@ -164,25 +165,18 @@ Integer operator+(const Integer& n1, const Integer& n2)
 
 Integer operator-(const Integer& n1, const Integer& n2)
 {
-	if (n1.positive == -1 && n2.positive == 1) {
-		Integer n3 = n1;
-		n3 = -n3;
-		Integer n4 = n3 + n2;
-		return -n4;
-	}
-	else if (n2.positive == -1 && n1.positive == 1) {
-		Integer n3 = n2;
-		n3 = -n3;
-		Integer n4 = n3 + n2;
-		return n3;
-	}
-	else if (n1.positive == -1 && n2.positive == -1) {
-		Integer n3 = n1;
-		Integer n4 = n2;
-		n3 = -n3;
-		n4 = -n4;
-		return n4 - n3;
-	}
+    if (n1.positive == -1 && n2.positive == 1) {
+        Integer n3 = n1 + n2;
+        n3 = -n3;
+        return n3;
+    }
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Integer n3 = n1 + n2;
+        return n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        return n2 - n1;
+    }
 
     Integer a;
     string num1, num2;
@@ -518,6 +512,25 @@ bool operator>(const Decimal& n1, const Decimal& n2)
 
 Decimal operator+(const Decimal& n1, const Integer& n2)
 {
+    if (n1.positive == -1 && n2.positive == 1) {
+        Decimal n3 = n1;
+        n3 = -n3;
+        return n2 - n3;
+    }
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Integer n3 = n2;
+        n3 = -n3;
+        return n1 - n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        Decimal n3 = n1;
+        Integer n4 = n2;
+        n3 = -n3;
+        n4 = -n4;
+        Decimal n5 = n3 + n4;
+        return -n5;
+    }
+
     string num1 = n1.number, num2 = n2.number;
     num2.insert(0, 100, '0');
     vector<int>ans;
@@ -565,12 +578,12 @@ Decimal operator+(const Decimal& n1, const Integer& n2)
 Decimal operator-(const Decimal& n1, const Integer& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
-        Integer n3 = n1 + n2;
+        Decimal n3 = n1 + n2;
         n3 = -n3;
         return n3;
     }
-    else if (n2.positive == -1 && n1.positive == 1) {
-        Integer n3 = n1 + n2;
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Decimal n3 = n1 + n2;
         return n3;
     }
     else if (n1.positive == -1 && n2.positive == -1) {
@@ -767,6 +780,25 @@ Decimal operator/(const Decimal& num1, const Integer& num2)
 
 Decimal operator+(const Integer& n1, const Decimal& n2)
 {
+    if (n1.positive == -1 && n2.positive == 1) {
+        Integer n3 = n1;
+        n3 = -n3;
+        return n2 - n3;
+    }
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Decimal n3 = n2;
+        n3 = -n3;
+        return n1 - n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        Integer n3 = n1;
+        Decimal n4 = n2;
+        n3 = -n3;
+        n4 = -n4;
+        Decimal n5 = n3 + n4;
+        return -n5;
+    }
+
     string num1 = n1.number, num2 = n2.number;
     num1.insert(0, 100, '0');
     vector<int>ans;
@@ -814,12 +846,12 @@ Decimal operator+(const Integer& n1, const Decimal& n2)
 Decimal operator-(const Integer& n1, const Decimal& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
-        Integer n3 = n1 + n2;
+        Decimal n3 = n1 + n2;
         n3 = -n3;
         return n3;
     }
-    else if (n2.positive == -1 && n1.positive == 1) {
-        Integer n3 = n1 + n2;
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Decimal n3 = n1 + n2;
         return n3;
     }
     else if (n1.positive == -1 && n2.positive == -1) {
@@ -1016,6 +1048,25 @@ Decimal operator/(const Integer& num1, const Decimal& num2)
 
 Decimal operator+(const Decimal& n1, const Decimal& n2)
 {
+    if (n1.positive == -1 && n2.positive == 1) {
+        Decimal n3 = n1;
+        n3 = -n3;
+        return n2 - n3;
+    }
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Decimal n3 = n2;
+        n3 = -n3;
+        return n1 - n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        Decimal n3 = n1;
+        Decimal n4 = n2;
+        n3 = -n3;
+        n4 = -n4;
+        Decimal n5 = n3 + n4;
+        return -n5;
+    }
+
     string num1 = n1.number, num2 = n2.number;
     vector<int>ans;
 
@@ -1062,12 +1113,12 @@ Decimal operator+(const Decimal& n1, const Decimal& n2)
 Decimal operator-(const Decimal& n1, const Decimal& n2)
 {
     if (n1.positive == -1 && n2.positive == 1) {
-        Integer n3 = n1 + n2;
+        Decimal n3 = n1 + n2;
         n3 = -n3;
         return n3;
     }
-    else if (n2.positive == -1 && n1.positive == 1) {
-        Integer n3 = n1 + n2;
+    else if (n1.positive == 1 && n2.positive == -1) {
+        Decimal n3 = n1 + n2;
         return n3;
     }
     else if (n1.positive == -1 && n2.positive == -1) {
