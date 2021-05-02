@@ -146,11 +146,6 @@ Integer operator+(const Integer& n1, const Integer& n2)
 
 Integer operator-(const Integer& n1, const Integer& n2)
 {
-    Integer a;
-    string num1, num2;
-    vector<int> ans;
-    num1 = n1.number;
-    num2 = n2.number;
     if (n1.positive == -1 && n2.positive == 1) {
         Integer n3 = n1 + n2;
         n3 = -n3;
@@ -163,6 +158,13 @@ Integer operator-(const Integer& n1, const Integer& n2)
     else if (n1.positive == -1 && n2.positive == -1) {
         return n2 - n1;
     }
+
+    Integer a;
+    string num1, num2;
+    vector<int> ans;
+    num1 = n1.number;
+    num2 = n2.number;
+
     //check if the answer is positive
     if (num1.length() > num2.length()) {}
     else if (num2.length() > num1.length()) {
@@ -537,6 +539,19 @@ Decimal operator+(const Decimal& n1, const Integer& n2)
 
 Decimal operator-(const Decimal& n1, const Integer& n2)
 {
+    if (n1.positive == -1 && n2.positive == 1) {
+        Integer n3 = n1 + n2;
+        n3 = -n3;
+        return n3;
+    }
+    else if (n2.positive == -1 && n1.positive == 1) {
+        Integer n3 = n1 + n2;
+        return n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        return n2 - n1;
+    }
+
     Decimal a;
     string num1, num2;
     vector<int> ans;
@@ -773,6 +788,19 @@ Decimal operator+(const Integer& n1, const Decimal& n2)
 
 Decimal operator-(const Integer& n1, const Decimal& n2)
 {
+    if (n1.positive == -1 && n2.positive == 1) {
+        Integer n3 = n1 + n2;
+        n3 = -n3;
+        return n3;
+    }
+    else if (n2.positive == -1 && n1.positive == 1) {
+        Integer n3 = n1 + n2;
+        return n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        return n2 - n1;
+    }
+
     Decimal a;
     string num1, num2;
     vector<int> ans;
@@ -1008,6 +1036,19 @@ Decimal operator+(const Decimal& n1, const Decimal& n2)
 
 Decimal operator-(const Decimal& n1, const Decimal& n2)
 {
+    if (n1.positive == -1 && n2.positive == 1) {
+        Integer n3 = n1 + n2;
+        n3 = -n3;
+        return n3;
+    }
+    else if (n2.positive == -1 && n1.positive == 1) {
+        Integer n3 = n1 + n2;
+        return n3;
+    }
+    else if (n1.positive == -1 && n2.positive == -1) {
+        return n2 - n1;
+    }
+
     Decimal a;
     string num1, num2;
     vector<int> ans;
@@ -1126,7 +1167,7 @@ Decimal operator*(const Decimal& num1, const Decimal& num2)
 
 Decimal operator/(const Decimal& num1, const Decimal& num2)
 {
-    
+
     Decimal n1 = num1, n2 = num2;
     n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
     string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
@@ -1253,10 +1294,10 @@ Decimal power(const Decimal& base, const Decimal& exp)
     for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
     if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
     if (check) { Decimal X; X.positive = 3; return X; }
-    
+
     if (exp.number[99] == '5')
     {
-        if(base.positive==-1){ Decimal X; X.positive = 3; return X; }
+        if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
         e = e * two;
         Decimal re = base;
         while (e.number != one.number)
@@ -1330,7 +1371,8 @@ Decimal::operator Integer()
     return tmp;
 }
 
-NumberObject::NumberObject() {
+NumberObject::NumberObject()
+{
     positive = -128;
     number = "";
     point_index = 0;
