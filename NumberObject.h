@@ -50,6 +50,7 @@ public:
 	friend Integer factorial(const Integer&);
 	friend Integer power(const Integer& base, const Integer& exp);
 	friend Integer power(const Integer& base, const Decimal& exp);
+	friend Integer lcm(const Integer&, const Integer&);
 	void operator=(const NumberObject&);
 	Integer operator-();
 	operator Decimal();
