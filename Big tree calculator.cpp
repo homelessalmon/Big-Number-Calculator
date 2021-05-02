@@ -359,6 +359,14 @@ void string_segmentation(string input, vector<string>& seg, string segflag, char
 	}
 }
 
+void Big_tree_calculator::exe() {
+	string input;
+	while (getline(cin, input)) {
+		string_process(input);
+	}
+	return;
+}
+
 void Big_tree_calculator::string_process(string input) {
 	if (input == "") {
 		return;
@@ -705,7 +713,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 		return error;
 	}
 
-	if (num_int.size() + num_dec.size() > 1) {
+	if (num_int.size() + num_dec.size() != 1) {
 		error.positive = 50;
 		return error;
 	}
