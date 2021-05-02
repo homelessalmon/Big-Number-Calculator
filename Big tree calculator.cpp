@@ -103,16 +103,16 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 		while (formula[i] != 'd' && formula[i] != 'i') {
 			i++;
 		}
-		i--;
-		if (positivity(formula.substr(0, i)) == 0) {
+		int pn = positivity(formula.substr(0, i));
+		if (pn == 0) {
 			return 1;
 		}
 		else {
-			if (formula[i + 1] == 'i') {
-				intlist[0].positive = intlist[0].positive * positivity(formula.substr(0, i));
+			if (formula[i] == 'i') {
+				intlist[0].positive = intlist[0].positive * pn;
 			}
-			else if (formula[i + 1] == 'd') {
-				declist[0].positive = declist[0].positive * positivity(formula.substr(0, i));
+			else if (formula[i] == 'd') {
+				declist[0].positive = declist[0].positive * pn;
 			}
 		}
 		formula.erase(0, i);
@@ -335,8 +335,7 @@ int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 	return 0;
 }
 
-void string_segmentation(string input, vector<string>& seg, string segflag, char packflag)
-{
+void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
 	int cur = 0, nextpack = 0, nextseg = 0;
 	while (nextpack != string::npos && nextseg != string::npos) {
 		nextseg = input.find_first_of(segflag, cur);
@@ -360,14 +359,10 @@ void string_segmentation(string input, vector<string>& seg, string segflag, char
 	}
 }
 
-void Big_tree_calculator::string_process(string input)
-{
+void Big_tree_calculator::string_process(string input) {
 	vector<string> input_seg;
 	string_segmentation(input, input_seg, " ", '\"');
-	if (input_seg.size() == 0) {
-		return;
-	}
-	else if (input_seg[0] == "Integer") {
+	if (input_seg[0] == "Integer") {
 		if (variableList.find(input_seg[1]) != -1) {
 			variableList.del_var(input_seg[1]);
 		}
@@ -449,8 +444,7 @@ void Big_tree_calculator::string_process(string input)
 	return;
 }
 
-NumberObject Big_tree_calculator::value_process(string input)
-{
+NumberObject Big_tree_calculator::value_process(string input) {
 	vector<Integer> num_int;
 	vector<Decimal> num_dec;
 	vector<int> int_pos;
@@ -469,10 +463,13 @@ NumberObject Big_tree_calculator::value_process(string input)
 			}
 			end = cur;
 			int length = end - begin;
+			string tempS;
 			switch (is_Decimal) {
 			case 0: {
 				Integer temp;
-				temp.number = input.substr(begin, length);
+				tempS = input.substr(begin, length);
+				reverse(tempS.begin(), tempS.end());
+				temp.number = tempS;
 				num_int.push_back(temp);
 				int_pos.push_back(begin);
 				break;
@@ -645,7 +642,7 @@ NumberObject Big_tree_calculator::value_process(string input)
 		case '^':
 		case '*':
 		case '/':
-			if (formula[i - 1] != 'n' || (formula[i + 1] != 'd' && formula[i + 1] != 'i' && formula[i + 1] != '+' && formula[i + 1] != '-')) {
+			if (formula[i + 1] != 'd' && formula[i + 1] != 'i' && formula[i + 1] != '+' && formula[i + 1] != '-') {
 				error.positive = 33;
 				return error;
 			}
