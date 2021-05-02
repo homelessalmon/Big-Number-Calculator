@@ -6,7 +6,8 @@ using namespace std;
 
 ostream& operator<<(ostream& io, NumberObject num) {
 	if (num.positive != 1 && num.positive != -1) {
-		cout << "errorcode:" << num.positive;
+		io << "errorcode:" << num.positive;
+		return io;
 	}
 	if (num.point_index == 0) {
 		if (num.positive == 1) {
