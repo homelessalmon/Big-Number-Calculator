@@ -423,7 +423,7 @@ void Big_tree_calculator::string_process(string input) {
 	else if (input_seg.size() > 1 && input_seg[1] == "=") {
 		NumberObject temp = value_process(input_seg[2]);
 		int v = variableList.find(input_seg[0]);
-		if (v <= 100) {
+		if (v >= 0 && v <= 100) {
 			if (temp.point_index == 0) {
 				variableList.Number_I[v] = temp;
 			}
@@ -435,7 +435,7 @@ void Big_tree_calculator::string_process(string input) {
 				variableList.Number_I[v] = integer;
 			}
 		}
-		else {
+		else if (v >= 100) {
 			if (temp.point_index != 0) {
 				variableList.Number_D[v - 100] = temp;
 			}
@@ -446,6 +446,10 @@ void Big_tree_calculator::string_process(string input) {
 				decimal = integer;
 				variableList.Number_D[v - 100] = decimal;
 			}
+		}
+		else {
+			cout << "10" << endl;
+			return;
 		}
 		//將input_seg[0]的變數賦值為input_seg[2]
 	}
@@ -545,13 +549,13 @@ NumberObject Big_tree_calculator::value_process(string input) {
 		//如果是變數名就尋找該變數並將值存入暫存變數欄
 		else if ((input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
 			int begin = cur, end;
-			while ((input[cur] >= '9' && input[cur] <= '0') || (input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
+			while ((input[cur] >= '0' && input[cur] <= '9') || (input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
 				cur++;
 			}
 			end = cur;
 			int length = end - begin;
 			int v = variableList.find(input.substr(begin, length));
-			if (v <= 100) {
+			if (v >= 0 && v <= 100) {
 				num_int.push_back(variableList.Number_I[v]);
 				int_pos.push_back(begin);
 			}
