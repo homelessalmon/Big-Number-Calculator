@@ -153,18 +153,25 @@ Integer operator+(const Integer& n1, const Integer& n2)
 
 Integer operator-(const Integer& n1, const Integer& n2)
 {
-    if (n1.positive == -1 && n2.positive == 1) {
-        Integer n3 = n1 + n2;
-        n3 = -n3;
-        return n3;
-    }
-    else if (n1.positive == 1 && n2.positive == -1) {
-        Integer n3 = n1 + n2;
-        return n3;
-    }
-    else if (n1.positive == -1 && n2.positive == -1) {
-        return n2 - n1;
-    }
+	if (n1.positive == -1 && n2.positive == 1) {
+	Integer n3 = n1;
+	n3 = -n3;
+	Integer n4 = n3 + n2;
+	return -n4;
+}
+else if (n2.positive == -1 && n1.positive == 1) {
+	Integer n3 = n2;
+	n3 = -n3;
+	Integer n4 = n3 + n2;
+	return n3;
+}
+else if (n1.positive == -1 && n2.positive == -1) {
+	Integer n3 = n1;
+	Integer n4 = n2;
+	n3 = -n3;
+	n4 = -n4;
+	return n4 - n3;
+}
 
     Integer a;
     string num1, num2;
