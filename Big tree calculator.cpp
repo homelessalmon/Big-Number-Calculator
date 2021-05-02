@@ -1,723 +1,1375 @@
-#include<vector>
-#include<string>
-#include "Big tree calculator.h"
+#include"NumberObject.h"
 
-int order_of(const string& formula, char type, int pos) {
-	int order = 0;
-	for (int i = 0; i < pos; i++) { //這是第幾個n
-		if (formula[i] == type) {
-			order++;
-		}
+using namespace std;
+
+//NumberObject
+
+Decimal sub(const Decimal& n1, const Decimal& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Decimal n3 = n1 + n2;
+		n3 = -n3;
+		return n3;
 	}
-	return order;
-}
-
-int formula_factorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
-	for (int i = 0; i < formula.size(); i++) {
-		if (formula[i] == '!') {
-			if (formula[i - 1] == 'i') {
-				int order = order_of(formula, 'i', i - 1);
-				intlist[order] = factorial(intlist[order]);
-				formula.erase(i, 1); //把運算完的運算子清除
-				i--;
-			}
-			else if (formula[i - 1] == 'd') {
-				int order = order_of(formula, 'd', i - 1);
-				declist[order] = factorial(declist[order]);
-				formula.erase(i, 1); //把運算完的運算子清除
-				i--;
-			}
-			else {
-				return 1;
-			}
-		}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Decimal n3 = n1 + n2;
+		return n3;
 	}
-	return 0;
-}
-
-
-int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
-	for (int i = formula.size() - 1; i >= 0; i--) {
-		if (formula[i] == '^') {
-			if (formula[i - 1] == 'i') {
-				int order = order_of(formula, 'i', i - 1);
-				if (formula[i + 1] == 'i') {
-					intlist[order] = power(intlist[order], intlist[order + 1]); //power(n, m) = n^m;
-					intlist.erase(intlist.begin() + order + 1);
-				}
-				else if (formula[i + 1] == 'd') {
-					int orderd = order_of(formula, 'd', i + 1);
-					declist[orderd] = power(intlist[order], declist[orderd]); //power(n, m) = n^m;
-					intlist.erase(intlist.begin() + order);
-				}
-				else {
-					return 1;
-				}
-				formula.erase(i, 2);
-				i -= 2;
-			}
-			else if (formula[i - 1] == 'd') {
-				int order = order_of(formula, 'd', i - 1);
-				if (formula[i + 1] == 'd') {
-					declist[order] = power(declist[order], declist[order + 1]); //power(n, m) = n^m;
-					declist.erase(declist.begin() + order + 1);
-				}
-				else if (formula[i + 1] == 'i') {
-					int orderi = order_of(formula, 'i', i + 1);
-					declist[order] = power(declist[order], intlist[orderi]); //power(n, m) = n^m;
-					intlist.erase(intlist.begin() + orderi);
-				}
-				else {
-					return 1;
-				}
-				formula.erase(i, 2);
-				i -= 2;
-			}
-			else {
-				return 1;
-			}
-		}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		return n2 - n1;
 	}
-	return 0;
-}
-
-int positivity(string sign) {
-	int positivity = 1;
-	for (int i = 0; i < sign.size(); i++) {
-		if (sign[i] == '+') {
-			continue;
-		}
-		else if (sign[i] == '-') {
-			positivity *= -1;
-		}
-		else {
-			return 0;
-		}
-	}
-	return positivity;
-}
-
-int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
-	if (formula[0] == '+' || formula[0] == '-') { //如--++-+n = -n
-		int i = 0;
-		while (formula[i] != 'd' && formula[i] != 'i') {
-			i++;
-		}
-		int pn = positivity(formula.substr(0, i));
-		if (pn == 0) {
-			return 1;
-		}
-		else {
-			if (formula[i] == 'i') {
-				intlist[0].positive = intlist[0].positive * pn;
-			}
-			else if (formula[i] == 'd') {
-				declist[0].positive = declist[0].positive * pn;
-			}
-		}
-		formula.erase(0, i);
-	}
-
-	for (int i = formula.size() - 1; i >= 1; i--) {
-		if (formula[i] == '+' || formula[i] == '-') { //d+--+++i = d+i
-			if (formula[i + 1] != 'd' && formula[i + 1] != 'i') {
-				return 1;
-			}
-			int j = i;
-			while (j > 0 && (formula[j - 1] == '+' || formula[j - 1] == '-')) {
-				j--;
-			}
-			int length;
-			if (formula[j - 1] == '*' || formula[j - 1] == '/') {
-				j--; // d/-----d j = 2
-			}
-			length = i - j;
-
-			if (length > 0) {
-				if (formula[i + 1] == 'i') {
-					int order = order_of(formula, 'i', i + 1);
-					if (positivity(formula.substr(j + 1, length)) == 0) {
-						return 1;
-					}
-					else {
-						intlist[order].positive = intlist[order].positive * positivity(formula.substr(j + 1, length));
-					}
-					formula.erase(j + 1, length);
-					i = j - 1;
-				}
-				else if (formula[i + 1] == 'd') {
-					int order = order_of(formula, 'd', i + 1);
-					if (positivity(formula.substr(j + 1, length)) == 0) {
-						return 1;
-					}
-					else {
-						declist[order].positive = declist[order].positive * positivity(formula.substr(j + 1, length));
-					}
-					formula.erase(j + 1, length);
-					i = j - 1;
-				}
-				else {
-					return 1;
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
-	for (int i = 0; i < formula.size(); i++) {
-		if (formula[i] == '*') {
-			if (formula[i - 1] == 'i') {
-				int order = order_of(formula, 'i', i - 1);
-				if (formula[i + 1] == 'i') {
-					intlist[order] = intlist[order] * intlist[order + 1];
-					intlist.erase(intlist.begin() + order + 1);
-					formula.erase(i, 2);
-				}
-				else if (formula[i + 1] == 'd') {
-					int orderd = order_of(formula, 'd', i - 1);
-					declist[orderd] = intlist[order] * declist[orderd];
-					intlist.erase(intlist.begin() + order);
-					formula.erase(i - 1, 2);
-				}
-				else {
-					return 1;
-				}
-				i -= 2;
-			}
-			else if (formula[i - 1] == 'd') {
-				int order = order_of(formula, 'd', i - 1);
-				if (formula[i + 1] == 'd') {
-					declist[order] = declist[order] * declist[order + 1];
-					declist.erase(declist.begin() + order + 1);
-				}
-				else if (formula[i + 1] == 'i') {
-					int orderi = order_of(formula, 'i', i + 1);
-					declist[order] = declist[order] * intlist[orderi];
-					intlist.erase(intlist.begin() + orderi);
-				}
-				else {
-					return 1;
-				}
-				formula.erase(i, 2);
-				i -= 2;
-
-			}
-			else {
-				return 1;
-			}
-		}
-		else if (formula[i] == '/') {
-			if (formula[i - 1] == 'i') {
-				int order = order_of(formula, 'i', i - 1);
-				if (formula[i + 1] == 'i') {
-					if (intlist[order + 1].number == "0") {
-						return 2;
-					}
-					intlist[order] = intlist[order] / intlist[order + 1];
-					intlist.erase(intlist.begin() + order + 1);
-					formula.erase(i, 2);
-				}
-				else if (formula[i + 1] == 'd') {
-					int orderd = order_of(formula, 'd', i - 1);
-					if (declist[orderd].numerator.number == "00" || declist[orderd].numerator.number == "0") {
-						return 2;
-					}
-					declist[orderd] = intlist[order] / declist[orderd];
-					intlist.erase(intlist.begin() + order);
-					formula.erase(i - 1, 2);
-				}
-				else {
-					return 1;
-				}
-				i -= 2;
-			}
-			else if (formula[i - 1] == 'd') {
-				int order = order_of(formula, 'd', i - 1);
-				if (formula[i + 1] == 'd') {
-					if (declist[order + 1].numerator.number == "00" || declist[order + 1].numerator.number == "0") {
-						return 2;
-					}
-					declist[order] = declist[order] / declist[order + 1];
-					declist.erase(declist.begin() + order + 1);
-				}
-				else if (formula[i + 1] == 'i') {
-					int orderi = order_of(formula, 'i', i + 1);
-					if (intlist[orderi].number == "0") {
-						return 2;
-					}
-					declist[order] = declist[order] / intlist[orderi];
-					intlist.erase(intlist.begin() + orderi);
-				}
-				else {
-					return 1;
-				}
-				formula.erase(i, 2);
-				i -= 2;
-			}
-			else {
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-
-int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
-	for (int i = 0; i < formula.size(); i++) {
-		if (formula[i] == '+') {
-			if (formula[i - 1] == 'i') {
-				int order = order_of(formula, 'i', i - 1);
-				if (formula[i + 1] == 'i') {
-					intlist[order] = intlist[order] + intlist[order + 1];
-					intlist.erase(intlist.begin() + order + 1);
-					formula.erase(i, 2);
-				}
-				else if (formula[i + 1] == 'd') {
-					int orderd = order_of(formula, 'd', i - 1);
-					declist[orderd] = intlist[order] + declist[orderd];
-					intlist.erase(intlist.begin() + order);
-					formula.erase(i - 1, 2);
-				}
-				else {
-					return 1;
-				}
-				i -= 2;
-			}
-			else if (formula[i - 1] == 'd') {
-				int order = order_of(formula, 'd', i - 1);
-				if (formula[i + 1] == 'd') {
-					declist[order] = declist[order] + declist[order + 1];
-					declist.erase(declist.begin() + order + 1);
-				}
-				else if (formula[i + 1] == 'i') {
-					int orderi = order_of(formula, 'i', i + 1);
-					declist[order] = declist[order] + intlist[orderi];
-					intlist.erase(intlist.begin() + orderi);
-				}
-				else {
-					return 1;
-				}
-				formula.erase(i, 2);
-				i -= 2;
-
-			}
-			else {
-				return 1;
-			}
-		}
-		else if (formula[i] == '-') {
-			if (formula[i - 1] == 'i') {
-				int order = order_of(formula, 'i', i - 1);
-				if (formula[i + 1] == 'i') {
-					intlist[order] = intlist[order] - intlist[order + 1];
-					intlist.erase(intlist.begin() + order + 1);
-					formula.erase(i, 2);
-				}
-				else if (formula[i + 1] == 'd') {
-					int orderd = order_of(formula, 'd', i - 1);
-					declist[orderd] = intlist[order] - declist[orderd];
-					intlist.erase(intlist.begin() + order);
-					formula.erase(i - 1, 2);
-				}
-				else {
-					return 1;
-				}
-				i -= 2;
-			}
-			else if (formula[i - 1] == 'd') {
-				int order = order_of(formula, 'd', i - 1);
-				if (formula[i + 1] == 'd') {
-					declist[order] = declist[order] - declist[order + 1];
-					declist.erase(declist.begin() + order + 1);
-				}
-				else if (formula[i + 1] == 'i') {
-					int orderi = order_of(formula, 'i', i + 1);
-					declist[order] = declist[order] - intlist[orderi];
-					intlist.erase(intlist.begin() + orderi);
-				}
-				else {
-					return 1;
-				}
-				formula.erase(i, 2);
-				i -= 2;
-			}
-			else {
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-
-void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
-	int cur = 0, nextpack = 0, nextseg = 0;
-	while (nextpack != string::npos || nextseg != string::npos) {
-		nextseg = input.find_first_of(segflag, cur);
-		nextpack = input.find_first_of(packflag, cur);
-		if (nextpack == string::npos || nextseg < nextpack) {
-			if (nextseg == string::npos) {
-				seg.push_back(input.substr(cur));
-				break;
-			}
-			seg.push_back(input.substr(cur, nextseg - cur));
-			cur = nextseg + 1;
-		}
-		else if (nextseg == string::npos || nextseg > nextpack) {
-			int packend = input.find_first_of(packflag, nextpack + 1);
-			if (nextpack != cur) {
-				seg.push_back(input.substr(cur, nextpack - cur));
-			}
-			seg.push_back(input.substr(nextpack + 1, packend - nextpack - 1));
-			cur = input.find_first_not_of(segflag + packflag, packend);
-		}
-	}
-}
-
-void Big_tree_calculator::exe() {
-	string input;
-	while (getline(cin, input)) {
-		string_process(input);
-	}
-	return;
-}
-
-void Big_tree_calculator::string_process(string input) {
-	if (input == "") {
-		return;
-	}
-	vector<string> input_seg;
-	string_segmentation(input, input_seg, " ", '\"');
-	if (input_seg[0] == "Integer" || input_seg[0] == "integer" || input_seg[0] == "Int" || input_seg[0] == "int") {
-		if (variableList.find(input_seg[1]) != -1) {
-			variableList.del_var(input_seg[1]);
-		}
-		if (input_seg.size() == 2) {
-			Integer integer;
-			integer.number = "0";
-			variableList.push_pack(input_seg[1], integer);
-		}
-		else {
-			NumberObject temp = value_process(input_seg[3]);
-			if (temp.point_index == 0) {
-				Integer integer;
-				integer = temp;
-				variableList.push_pack(input_seg[1], integer);
-			}
-			else {
-				Decimal decimal;
-				decimal = temp;
-				Integer integer;
-				integer = decimal;
-				variableList.push_pack(input_seg[1], integer);
-			}
-		}
-	}
-	else if (input_seg[0] == "Decimal") {
-		if (input_seg.size() == 2) {
-			Decimal decimal;
-			decimal.denominator.number = "1";
-			decimal.numerator.number = "0";
-			variableList.push_pack(input_seg[1], decimal);
-		}
-		else {
-			Decimal temp = value_process(input_seg[3]);
-			if (temp.point_index == 0) {
-				temp.point_index = 1;
-				variableList.push_pack(input_seg[1], temp);
-			}
-			else {
-				variableList.push_pack(input_seg[1], temp);
-			}
-		}
-	}
-	else if (input_seg.size() > 1 && input_seg[1] == "=") {
-		NumberObject temp = value_process(input_seg[2]);
-		int v = variableList.find(input_seg[0]);
-		if (v >= 0 && v <= 100) {
-			if (temp.point_index == 0) {
-				variableList.Number_I[v] = temp;
-			}
-			else {
-				Decimal decimal;
-				decimal = temp;
-				Integer integer;
-				integer = decimal;
-				variableList.Number_I[v] = integer;
-			}
-		}
-		else if (v >= 100) {
-			if (temp.point_index != 0) {
-				variableList.Number_D[v - 100] = temp;
-			}
-			else {
-				Integer integer;
-				integer = temp;
-				Decimal decimal;
-				decimal = integer;
-				variableList.Number_D[v - 100] = decimal;
-			}
-		}
-		else {
-			cout << "errorcode:10" << endl;
-			return;
-		}
-		//將input_seg[0]的變數賦值為input_seg[2]
+	Decimal a;
+	string num1, num2;
+	vector<int> ans;
+	num1 = n1.number;
+	num2 = n2.number;
+	//check if the answer is positive
+	if (num1.length() > num2.length()) {}
+	else if (num2.length() > num1.length()) {
+		swap(num1, num2);
+		a.positive = -1;
 	}
 	else {
-		cout << value_process(input_seg[0]) << endl;
+		for (int i = num1.length() - 1; i >= 0; i--) {
+			if (num1[i] > num2[i]) {
+				break;
+			}
+			if (num1[i] < num2[i]) {
+				swap(num1, num2);
+				a.positive = -1;
+				break;
+			}
+		}
 	}
-	return;
+	//substraction
+	int borrow = 0, num1_len = num1.length(), num2_len = num2.length();
+	for (int i = 0; i < num1_len; i++) {
+		if (i < num2_len) {
+			int t = (num1[i] - '0') - (num2[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num1[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+	}
+	//clear redundant zeros ex.1000 - 999 = 0001 -> 1
+	for (int i = ans.size() - 1; i > 0; i--) {
+		if (ans[i] != 0)
+			break;
+		ans.pop_back();
+	}
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+	while (temp.length() < 101) {
+		temp.append(1, '0');
+	}
+	a.number = temp;
+	return a;
 }
 
-Decimal Big_tree_calculator::value_process(string input) {
-	vector<Integer> num_int;
-	vector<Decimal> num_dec;
-	vector<char> op;
-	string formula = "";
-	int cur = 0;
-	Decimal error;
-	while (1) {
-		//如果讀到數字就將其暫存為一個變數
-		if ((input[cur] <= '9' && input[cur] >= '0')) {
-			int begin = cur, end, is_Decimal = 0;
-			while ((input[cur] <= '9' && input[cur] >= '0') || (input[cur] == '.')) {
-				if ((input[cur] == '.')) {
-					is_Decimal++;
-				}
-				cur++;
-			}
-			end = cur;
-			int length = end - begin;
-			string temp_string;
-			switch (is_Decimal) {
-			case 0: {
-				temp_string = input.substr(begin, length);
-				reverse(temp_string.begin(), temp_string.end());
-				Integer temp;
-				temp.number = temp_string;
-				num_int.push_back(temp);
-				formula = formula + 'i';
-				break;
-			}
-			case 1: {
-				temp_string = input.substr(begin, length);
-				reverse(temp_string.begin(), temp_string.end());
-				char point_pos;
-				for (point_pos = 0; point_pos < temp_string.size(); point_pos++) {
-					if (temp_string[point_pos] == '.') {
-						temp_string.erase(point_pos, 1);
-						break;
-					}
-				}
-				Integer numerator;
-				numerator.number = temp_string;
-				Integer denominator;
-				denominator.number = "1";
-				for (point_pos; point_pos > 0; point_pos--) {
-					denominator.number = denominator.number + "0";
-				}
-				reverse(denominator.number.begin(), denominator.number.end());
-				Decimal temp;
-				temp.numerator = numerator;
-				temp.denominator = denominator;
-				num_dec.push_back(temp);
-				formula = formula + 'd';
-				break;
-			}
-			default:
-				error.positive = 11;
-				return error;
-				break;
-			}
+ostream& operator<<(ostream& io, NumberObject num) {
+	if (num.positive != 1 && num.positive != -1) {
+		io << "errorcode:" << num.positive;
+		return io;
+	}
+	if (num.point_index == 0) {
+		if (num.positive == 1) {
+			string temp = num.number;
+			reverse(temp.begin(), temp.end());
+			io << temp;
+			return io;
 		}
-
-		//讀到括號就遞迴，將括號內的結果作為變數暫存
-		else if (input[cur] == '(') {
-			int begin = cur + 1, end;
-			int parenthese_deepth = 0;
-			while (true) {
-				if (input[cur] == '(') {
-					parenthese_deepth++;
-				}
-				else if (input[cur] == ')') {
-					parenthese_deepth--;
-				}
-				if (parenthese_deepth == 0) {
-					end = cur;
-					cur++;
-					break;
-				}
-				cur++;
-				if (cur == input.size()) {
-					//如果parenthese_deepth合理的話可以做防呆？
-					error.positive = 20;
-					return error;
-				}
-			}
-			int length = end - begin;
-			Decimal parenthese = value_process(input.substr(begin, length));
-			if (parenthese.point_index == 0) {
-				Integer temp;
-				temp = parenthese;
-				num_int.push_back(temp);
-				formula = formula + 'i';
-			}
-			else {
-				Decimal temp;
-				temp = parenthese;
-				num_dec.push_back(temp);
-				formula = formula + 'd';
-			}
-		}
-		else if (input[cur] == ')') {
-			error.positive = 21;
-			return error;
-		}
-
-		//如果是變數名就尋找該變數並將值存入暫存變數欄
-		else if ((input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
-			int begin = cur, end;
-			while ((input[cur] >= '0' && input[cur] <= '9') || (input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
-				cur++;
-			}
-			end = cur;
-			int length = end - begin;
-			int v = variableList.find(input.substr(begin, length));
-			if (v >= 0 && v <= 100) {
-				num_int.push_back(variableList.Number_I[v]);
-				formula = formula + 'i';
-			}
-			else if (v > 100) {
-				num_dec.push_back(variableList.Number_D[v - 100]);
-				formula = formula + 'd';
-			}
-			else if (v == -1) {
-				error.positive = 10;
-				return error;
-			}
-		}
-		else if (input[cur] == '+' || input[cur] == '-' || input[cur] == '*' || input[cur] == '/' || input[cur] == '^' || input[cur] == '!') {
-			op.push_back(input[cur]);
-			formula = formula + input[cur];
-			cur++;
-		}
-		//讀到結尾就結束
-		else if (input[cur] == '\0') {
-			break;
-		}
-
-		//讀到空格就不管
 		else {
-			cur++;
+			if (num.positive == -1) {
+				string temp = num.number;
+				reverse(temp.begin(), temp.end());
+				io << "-" << temp;
+				return io;
+			}
+		}
+	}
+	else {
+		if (num.positive == 1) {
+			string temp = num.number;
+			reverse(temp.begin(), temp.end());
+			for (int i = 0; i < temp.length(); i++) {
+				if (temp.length() - i == 100) {
+					cout << '.';
+				}
+				io << temp[i];
+			}
+			return io;
+		}
+		else if (num.positive == -1) {
+			string temp = num.number;
+			int c = temp.length();
+			reverse(temp.begin(), temp.end());
+			io << "-";
+			for (int i = 0; i < temp.length(); i++) {
+				if (temp.length() - i == 100) {
+					cout << '.';
+				}
+				io << temp[i];
+			}
+			return io;
+		}
+	}
+}
+
+//NumberObject::operator Integer()
+//{
+//    Integer tmp;
+//    tmp.number = this->number;
+//    tmp.positive = this->positive;
+//    return tmp;
+//}
+//
+//NumberObject::operator Decimal()
+//{
+//    Decimal tmp;
+//    tmp.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + number;
+//    tmp.positive = 1;
+//    return tmp;
+//}
+
+//int
+
+Integer::Integer() {
+	point_index = 0;
+	positive = 1;
+}
+
+Integer::Integer(const Integer& reference) {
+	number = reference.number;
+	point_index = reference.point_index;
+	positive = reference.positive;
+}
+
+Integer operator+(const Integer& n1, const Integer& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Integer n3 = n1;
+		n3 = -n3;
+		return n2 - n3;
+	}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Integer n3 = n2;
+		n3 = -n3;
+		return n1 - n3;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Integer n3 = n1;
+		Integer n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		Integer n5 = n3 + n4;
+		return -n5;
+	}
+
+	string num1 = n1.number, num2 = n2.number;
+	vector<int>ans;
+
+	int num1_len = num1.length(), num2_len = num2.length();
+	if (num1_len > num2_len) {
+		swap(num1, num2);
+		swap(num1_len, num2_len);
+	}
+
+	int carry = 0;
+	for (int i = 0; i < num2_len; i++) {
+		if (i < num1_len) {
+			int t = (num1[i] - '0') + (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+	}
+	if (carry == 1) ans.push_back(1);
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	Integer a;
+	a.number = temp;
+	a.positive = 1;
+	return a;
+}
+
+Integer operator-(const Integer& n1, const Integer& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Integer n3 = n1;
+		n3 = -n3;
+		Integer n4 = n3 + n2;
+		return -n4;
+	}
+	else if (n2.positive == -1 && n1.positive == 1) {
+		Integer n3 = n2;
+		n3 = -n3;
+		Integer n4 = n3 + n1;
+		return n4;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Integer n3 = n1;
+		Integer n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		return n4 - n3;
+	}
+
+	Integer a;
+	string num1, num2;
+	vector<int> ans;
+	num1 = n1.number;
+	num2 = n2.number;
+
+	//check if the answer is positive
+	if (num1.length() > num2.length()) {}
+	else if (num2.length() > num1.length()) {
+		swap(num1, num2);
+		a.positive = -1;
+	}
+	else {
+		for (int i = num1.length() - 1; i >= 0; i--) {
+			if (num1[i] > num2[i]) {
+				break;
+			}
+			if (num1[i] < num2[i]) {
+				swap(num1, num2);
+				a.positive = -1;
+				break;
+			}
 		}
 	}
 
-
-	//! :要確保前面只能是數
-	//^ :要確保前後都是數，後面可以是+-
-	//*/:要確保前後都是數，後面可以是+-
-	//+-:要確保前後只能是+-與數
-	//確保兩個數中間一定有運算子
-	//有問題就回傳輸入錯誤
-	if (formula[0] == '!' || formula[0] == '^' || formula[0] == '*' || formula[0] == '/') {
-		error.positive = 30;
-		return error;
-	}
-	if (formula[formula.size()] == '^' || formula[formula.size()] == '*' || formula[formula.size()] == '/' || formula[formula.size()] == '+' || formula[formula.size()] == '-') {
-		error.positive = 31;
-		return error;
-	}
-	for (int i = 1; i < formula.size() - 1; i++) {
-		switch (formula[i]) {
-		case '!':
-			if ((formula[i - 1] != '!' && formula[i - 1] != 'i')) {
-				error.positive = 32;
-				return error;
+	//substraction
+	int borrow = 0, num1_len = num1.length(), num2_len = num2.length();
+	for (int i = 0; i < num1_len; i++) {
+		if (i < num2_len) {
+			int t = (num1[i] - '0') - (num2[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
 			}
-			break;
-		case '^':
-		case '*':
-		case '/':
-			if (formula[i + 1] != 'd' && formula[i + 1] != 'i' && formula[i + 1] != '+' && formula[i + 1] != '-') {
-				error.positive = 33;
-				return error;
-			}
-			break;
-		case '+':
-		case '-':
-			if (formula[i + 1] != '+' && formula[i + 1] != '-' && formula[i + 1] != 'd' && formula[i + 1] != 'i') {
-				error.positive = 34;
-				return error;
-			}
-			break;
-		case 'd':
-		case 'i':
-			if (formula[i - 1] == 'd' || formula[i + 1] == 'd' || formula[i - 1] == 'i' || formula[i + 1] == 'i') {
-				error.positive = 35;
-				return error;
-			}
-			break;
-		default:
-			error.positive = 36;
-			return error;
-			break;
+			else borrow = 0;
+			ans.push_back(t);
 		}
-	}
-	// n+n*n--n!
-	for (int i = 0; i < num_int.size(); i++) {
-		if (num_int[i].positive != 1 && num_int[i].positive != -1) {
-			return num_int[i];
-		}
-	}
-	for (int i = 0; i < num_dec.size(); i++) {
-		if (num_dec[i].positive != 1 && num_dec[i].positive != -1) {
-			return num_dec[i];
+		else {
+			int t = (num1[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
 		}
 	}
 
-	if (formula_factorial(formula, num_int, num_dec) != 0) {
-		error.positive = 40;
-		return error;
+	//clear redundant zeros ex.1000 - 999 = 0001 -> 1
+	for (int i = ans.size() - 1; i > 0; i--) {
+		if (ans[i] != 0)
+			break;
+		ans.pop_back();
 	}
 
-	if (formula_power(formula, num_int, num_dec) != 0) {
-		error.positive = 41;
-		return error;
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
 	}
 
-	if (formula_sign(formula, num_int, num_dec) != 0) {
-		error.positive = 42;
-		return error;
+	a.number = temp;
+	return a;
+}
+
+Integer operator*(const Integer& num1, const Integer& num2) {
+	if (num1.number == "0" || num2.number == "0") {
+		Integer A;
+		A.number = "0";
+		A.positive = 1;
+		return A;
 	}
-	int code = formula_muldiv(formula, num_int, num_dec);
-	if (code == 1) {
-		error.positive = 43;
-		return error;
+	vector<Integer> list_to_plus;
+	for (int i = 0; i < num2.number.length(); i++) {
+		int q = 0;
+		string temp = num1.number;
+		for (int j = 0; j < num1.number.length(); j++) {
+			int c = ((temp[j] - '0') * (num2.number[i] - '0') + q) % 10;
+			q = ((temp[j] - '0') * (num2.number[i] - '0') + q) / 10;
+			temp[j] = c + '0';
+			if (j == num1.number.length() - 1 && q > 0) {
+				temp.append(1, q + '0');
+			}
+		}
+		Integer A;
+		A.number = temp;
+		list_to_plus.push_back(A);
 	}
-	else if (code == 2) {
+	for (int i = 0; i < list_to_plus.size(); i++) {
+		string x = "";
+		for (int j = 0; j < i; j++) {
+			x.append(1, '0');
+		}
+		list_to_plus[i].number = x + list_to_plus[i].number;
+	}
+	Integer re;
+	re.number = "0";
+	for (int i = 0; i < list_to_plus.size(); i++) {
+		re = re + list_to_plus[i];
+	}
+	re.positive = num1.positive * num2.positive;
+	return re;
+}
+
+Integer operator/(const Integer& num1, const Integer& num2) {
+	if (num2.number == "0") {
+		Decimal error;
 		error.positive = 4;
 		return error;
 	}
+	Decimal n1, n2;
+	n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + num2.number;
+	n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
+	string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	if (n1.number == "0") {
+		Integer X;
+		X.number = "0";
+		return X;
+	}
+	else {
+		if (n2.number == "0") {
+			Integer X;
+			X.positive = 3;
+			return X;
+		}
+	}
+	if (num2.positive == 3) {
+		Integer X;
+		X.number = "0";
+		return X;
+	}
+	while (n1.number.length() > n2.number.length()) {
+		t = "0" + t;
+		n2.number = "0" + n2.number;
+	}
 
-	if (formula_addsub(formula, num_int, num_dec) != 0) {
-		error.positive = 44;
+	if (n1.number[n1.number.length() - 1] == '0') { n1.number.pop_back(); }
+	if (n2.number[n2.number.length() - 1] == '0') { n2.number.pop_back(); }
+
+	for (int i = t.length() - 1; i > -1; i--) {
+		int m = 0;
+		while (1) {
+			Decimal A;
+			A = sub(n1, n2);
+			if (A.positive < 0) { break; }
+			n1 = sub(n1, n2);
+			m++;
+		}
+		t[i] = m + '0';
+		m = 0;
+		n2.number.erase(n2.number.begin());
+		if (n2.number.length() < 101) { n2.number.append(1, '0'); }
+	}
+	while (t[t.length() - 1] == '0') {
+		t.pop_back();
+	}
+
+	while (t.length() < 101) {
+		t.append(1, '0');
+	}
+	Integer temp;
+	temp.number = t.substr(100);
+	temp.positive = num1.positive * num2.positive;
+	return temp;
+}
+
+Integer factorial(const Integer& num) {
+	if (num.positive != -1 && num.positive != 1) { Integer X; X.positive = 2; return X; }
+	Integer one; one.number = "1";
+	Integer s = one, now = num;
+	if (num.number == "0") {
+		return one;
+	}
+	while (now.number != one.number) {
+		s = s * now;
+		now = now - one;
+	}
+	return s;
+}
+
+Integer power(const Integer& base, const Integer& exp) {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Integer X; X.positive = 3; return X; }
+	Integer s = base, temp = exp, one; one.number = "1";
+	if (exp.number == "0" || exp.positive == -1) { Integer tmp; tmp.number = "1"; return tmp; }
+	while (temp.number != "1") { s = s * base; temp = temp - one; }
+	return s;
+}
+
+Integer power(const Integer& base, const Decimal& exp) {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Integer X; X.positive = 3; return X; }
+	Decimal b, e = exp, one, two, zero; b.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + base.number;
+	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
+	if (exp.number == zero.number) { return one; }
+	if (b.number == "0") { return zero; }
+	if (exp.positive == -1) { return zero; }
+
+	bool check = false;
+	for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
+	if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
+	if (check) { Decimal X; X.positive = 3; return X; }
+
+	if (exp.number[99] == '5') {
+		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
+		e = e * two;
+		Decimal re = b;
+		while (e.number != one.number) {
+			re = re * base;
+			e = e - one;
+		}
+		Decimal next, now = re / two; next.number = "0";
+		while (next.number != now.number) {
+			next = ((now * now) + re) / (two * now);
+			swap(next, now);
+		}
+		if (exp.positive == -1) {
+			return one / now;
+		}
+		else {
+			if (exp.positive == 1) {
+				return now;
+			}
+		}
+	}
+	else {
+		Decimal re = b;
+
+		while (e.number != one.number) {
+			re = re * base;
+			e = e - one;
+		}
+		if (exp.positive == -1) {
+			return one / re;
+		}
+		else {
+			if (exp.positive == 1) {
+				return re;
+			}
+		}
+	}
+
+}
+
+bool operator >(const Integer& num1, const Integer& num2) {
+	if (num2.positive > num1.positive) { return false; }
+	if (num1.number == num2.number) { return false; }
+	else if (num2.number.length() > num1.number.length()) { return false; }
+	else {
+		if (num1.number.length() > num2.number.length()) { return true; }
+		else {
+			for (int i = num1.number.length(); i > -1; i--) {
+				if (num1.number[i] > num2.number[i]) { return true; }
+			}
+		}
+	}
+	return false;
+}
+
+bool operator >=(const Integer& num1, const Integer& num2) {
+	if (num2.positive > num1.positive) { return false; }
+	if (num1.number == num2.number) { return true; }
+
+	if (num2.number.length() > num1.number.length()) { return false; }
+	else {
+		if (num1.number.length() > num2.number.length()) { return true; }
+		else {
+			for (int i = num1.number.length() - 1; i > -1; i--) {
+				if (num1.number[i] > num2.number[i]) { return true; }
+			}
+		}
+	}
+	return false;
+}
+
+Integer operator%(const Integer& num1, const Integer& num2) {
+	Integer n1 = num1;
+	if (num2 > num1) { return num1; }
+	while (n1 >= num2) { n1 = n1 - num2; }
+	return n1;
+}
+
+Integer gcd(const Integer& num1, const Integer& num2) {
+	Integer n1 = num1, n2 = num2;
+	if (n2.number == "0") {
+		return n1;
+	}
+	else {
+		return gcd(n2, n1 % n2);
+	}
+}
+
+Integer lcm(const Integer& num1, const Integer& num2) {
+	Integer re = num1 * num2;
+	re = re / gcd(num1, num2);
+	return re;
+}
+
+void Integer::operator=(const NumberObject& input) {
+	number = input.number;
+	positive = input.positive;
+	point_index = input.point_index;
+}
+
+Integer Integer::operator-() {
+	if (this->number != "0") {
+		this->positive *= -1;
+	}
+	return *this;
+}
+
+Integer::operator Decimal() {
+	Decimal temp;
+	string str = this->number;
+	temp.positive = this->positive;
+	temp.number = str.insert(0, 100, '0');
+	return temp;
+}
+
+//-------------------------------------------------------------------------
+//Decimal
+
+Decimal::Decimal() {
+	numerator.number = "0";
+	denominator.number = "1";
+	point_index = 1;
+	positive = 1;
+}
+
+Decimal::Decimal(const Decimal& reference) {
+	numerator = reference.numerator;
+	denominator = reference.denominator;
+	number = reference.number;
+	point_index = reference.point_index;
+	positive = reference.positive;
+}
+
+void reduct_fraction(Integer& numerator, Integer& denominator) {
+	Integer A = gcd(numerator, denominator);
+	numerator = numerator / A;
+	denominator = denominator / A;
+}
+
+Decimal operator+(const Decimal& n1, const Integer& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Decimal n3 = n1;
+		n3 = -n3;
+		return n2 - n3;
+	}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Integer n3 = n2;
+		n3 = -n3;
+		return n1 - n3;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Decimal n3 = n1;
+		Integer n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		Decimal n5 = n3 + n4;
+		return -n5;
+	}
+
+	Integer num = n1.denominator * n2;
+	string num1 = n1.numerator.number, num2 = num.number;
+	vector<int>ans;
+
+	int num1_len = num1.length(), num2_len = num2.length();
+	if (num1_len > num2_len) {
+		swap(num1, num2);
+		swap(num1_len, num2_len);
+	}
+
+	int carry = 0;
+	for (int i = 0; i < num2_len; i++) {
+		if (i < num1_len) {
+			int t = (num1[i] - '0') + (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+	}
+	if (carry == 1) ans.push_back(1);
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	Decimal a;
+	a.numerator.number = temp;
+	a.denominator = n1.denominator;
+
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = a.numerator.positive;
+
+	return a;
+}
+
+Decimal operator-(const Decimal& n1, const Integer& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Decimal n3 = n1;
+		n3 = -n3;
+		Decimal n4 = n3 + n2;
+		return -n4;
+	}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Integer n3 = n2;
+		n3 = -n3;
+		Decimal n4 = n3 + n1;
+		return n4;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Decimal n3 = n1;
+		Integer n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		return n4 - n3;
+	}
+
+	Decimal a;
+	Integer num = n1.denominator * n2;
+	vector<int> ans;
+	string num1 = n1.numerator.number, num2 = num.number;
+
+	//check if the answer is positive
+	if (num1.length() > num2.length()) {}
+	else if (num2.length() > num1.length()) {
+		swap(num1, num2);
+		a.positive = -1;
+	}
+	else {
+		for (int i = num1.length() - 1; i >= 0; i--) {
+			if (num1[i] > num2[i]) {
+				break;
+			}
+			if (num1[i] < num2[i]) {
+				swap(num1, num2);
+				a.positive = -1;
+				break;
+			}
+		}
+	}
+
+	//substraction
+	int borrow = 0, num1_len = num1.length(), num2_len = num2.length();
+	for (int i = 0; i < num1_len; i++) {
+		if (i < num2_len) {
+			int t = (num1[i] - '0') - (num2[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num1[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+	}
+
+	//clear redundant zeros ex.1000 - 999 = 0001 -> 1
+	for (int i = ans.size() - 1; i > 0; i--) {
+		if (ans[i] != 0)
+			break;
+		ans.pop_back();
+	}
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	a.numerator.number = temp;
+	a.denominator = n1.denominator;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	return a;
+}
+
+Decimal operator*(const Decimal& num1, const Integer& num2) {
+	if (num1.positive == -1 && num2.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Integer n3 = num2; n3 = -n3;
+		return n2 * n3;
+	}
+	else if (num1.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Decimal n3 = n2 * num2;
+		return -n3;
+	}
+	else if (num2.positive == -1) {
+		Integer n2 = num2; n2 = -n2;
+		Decimal n3 = num1 * n2;
+		return -n3;
+	}
+
+	Decimal a;
+	a.numerator = num1.numerator * num2;
+	a.denominator = num1.denominator;
+	a.positive = num1.positive * num2.positive;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	return a;
+}
+
+Decimal operator/(const Decimal& num1, const Integer& num2) {
+	if (num2.number == "0") {
+		Decimal error;
+		error.positive = 4;
 		return error;
 	}
+	if (num1.positive == -1 && num2.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Integer n3 = num2; n3 = -n3;
+		return n2 / n3;
+	}
+	else if (num1.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Decimal n3 = n2 / num2;
+		return -n3;
+	}
+	else if (num2.positive == -1) {
+		Integer n2 = num2; n2 = -n2;
+		Decimal n3 = num1 / n2;
+		return -n3;
+	}
 
-	if (num_int.size() + num_dec.size() != 1) {
-		error.positive = 50;
+	Decimal a;
+	a.numerator = num1.numerator;
+	a.denominator = num1.denominator * num2;
+	a.positive = num1.positive * num2.positive;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	return a;
+}
+
+Decimal operator+(const Integer& n1, const Decimal& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Integer n3 = n1;
+		n3 = -n3;
+		return n2 - n3;
+	}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Decimal n3 = n2;
+		n3 = -n3;
+		return n1 - n3;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Integer n3 = n1;
+		Decimal n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		Decimal n5 = n3 + n4;
+		return -n5;
+	}
+
+	Integer num = n2.denominator * n1;
+	string num1 = num.number, num2 = n2.numerator.number;
+	vector<int>ans;
+
+	int num1_len = num1.length(), num2_len = num2.length();
+	if (num1_len > num2_len) {
+		swap(num1, num2);
+		swap(num1_len, num2_len);
+	}
+
+	int carry = 0;
+	for (int i = 0; i < num2_len; i++) {
+		if (i < num1_len) {
+			int t = (num1[i] - '0') + (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+	}
+	if (carry == 1) ans.push_back(1);
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	Decimal a;
+	a.numerator.number = temp;
+	a.denominator = n2.denominator;
+
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = a.numerator.positive;
+	return a;
+}
+
+Decimal operator-(const Integer& n1, const Decimal& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Integer n3 = n1;
+		n3 = -n3;
+		Decimal n4 = n3 + n2;
+		return -n4;
+	}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Decimal n3 = n2;
+		n3 = -n3;
+		Decimal n4 = n3 + n1;
+		return n4;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Integer n3 = n1;
+		Decimal n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		return n4 - n3;
+	}
+
+	Decimal a;
+	Integer num = n2.denominator * n1;
+	vector<int> ans;
+	string num1 = num.number, num2 = n2.numerator.number;
+
+	//check if the answer is positive
+	if (num1.length() > num2.length()) {}
+	else if (num2.length() > num1.length()) {
+		swap(num1, num2);
+		a.positive = -1;
+	}
+	else {
+		for (int i = num1.length() - 1; i >= 0; i--) {
+			if (num1[i] > num2[i]) {
+				break;
+			}
+			if (num1[i] < num2[i]) {
+				swap(num1, num2);
+				a.positive = -1;
+				break;
+			}
+		}
+	}
+
+	//substraction
+	int borrow = 0, num1_len = num1.length(), num2_len = num2.length();
+	for (int i = 0; i < num1_len; i++) {
+		if (i < num2_len) {
+			int t = (num1[i] - '0') - (num2[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num1[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+	}
+
+	//clear redundant zeros ex.1000 - 999 = 0001 -> 1
+	for (int i = ans.size() - 1; i > 0; i--) {
+		if (ans[i] != 0)
+			break;
+		ans.pop_back();
+	}
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	a.numerator.number = temp;
+	a.denominator = n2.denominator;
+
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = a.numerator.positive;
+	return a;
+}
+
+Decimal operator*(const Integer& num1, const Decimal& num2) {
+	if (num1.positive == -1 && num2.positive == -1) {
+		Integer n2 = num1; n2 = -n2;
+		Decimal n3 = num2; n3 = -n3;
+		return n2 * n3;
+	}
+	else if (num1.positive == -1) {
+		Integer n2 = num1; n2 = -n2;
+		Decimal n3 = n2 * num2;
+		return -n3;
+	}
+	else if (num2.positive == -1) {
+		Decimal n2 = num2; n2 = -n2;
+		Decimal n3 = num1 * n2;
+		return -n3;
+	}
+
+	Decimal a;
+	a.numerator = num1 * num2.numerator;
+	a.denominator = num2.denominator;
+	a.positive = num1.positive * num2.positive;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	return a;
+}
+
+Decimal operator/(const Integer& num1, const Decimal& num2) {
+	if (num2.numerator.number == "0") {
+		Decimal error;
+		error.positive = 4;
 		return error;
 	}
+	if (num1.positive == -1 && num2.positive == -1) {
+		Integer n2 = num1; n2 = -n2;
+		Decimal n3 = num2; n3 = -n3;
+		return n2 / n3;
+	}
+	else if (num1.positive == -1) {
+		Integer n2 = num1; n2 = -n2;
+		Decimal n3 = n2 / num2;
+		return -n3;
+	}
+	else if (num2.positive == -1) {
+		Decimal n2 = num2; n2 = -n2;
+		Decimal n3 = num1 / n2;
+		return -n3;
+	}
 
-	if (num_int.size() == 1) {
-		Decimal temp;
-		temp = num_int[0];
-		temp.point_index = 0;
-		return temp;
+	Decimal a;
+	a.numerator = num1 * num2.denominator;
+	a.denominator = num2.numerator;
+	a.positive = num1.positive * num2.positive;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	return a;
+}
+
+Decimal operator+(const Decimal& n1, const Decimal& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Decimal n3 = n1;
+		n3 = -n3;
+		return n2 - n3;
 	}
-	else if (num_dec.size() == 1) {
-		return num_dec[0];
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Decimal n3 = n2;
+		n3 = -n3;
+		return n1 - n3;
 	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Decimal n3 = n1;
+		Decimal n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		Decimal n5 = n3 + n4;
+		return -n5;
+	}
+
+	Integer nn1 = n1.numerator * lcm(n1.denominator, n2.denominator) / n1.denominator, nn2 = n2.numerator * lcm(n1.denominator, n2.denominator) / n2.denominator;
+	string num1 = nn1.number, num2 = nn2.number;
+	vector<int>ans;
+
+	int num1_len = num1.length(), num2_len = num2.length();
+	if (num1_len > num2_len) {
+		swap(num1, num2);
+		swap(num1_len, num2_len);
+	}
+
+	int carry = 0;
+	for (int i = 0; i < num2_len; i++) {
+		if (i < num1_len) {
+			int t = (num1[i] - '0') + (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+	}
+	if (carry == 1) ans.push_back(1);
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	Decimal a;
+	a.numerator.number = temp;
+	a.denominator = lcm(n1.denominator, n2.denominator);
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = a.numerator.positive;
+	return a;
+}
+
+Decimal operator-(const Decimal& n1, const Decimal& n2) {
+	if (n1.positive == -1 && n2.positive == 1) {
+		Decimal n3 = n1;
+		n3 = -n3;
+		Decimal n4 = n3 + n2;
+		return -n4;
+	}
+	else if (n1.positive == 1 && n2.positive == -1) {
+		Decimal n3 = n2;
+		n3 = -n3;
+		Decimal n4 = n3 + n1;
+		return n4;
+	}
+	else if (n1.positive == -1 && n2.positive == -1) {
+		Decimal n3 = n1;
+		Decimal n4 = n2;
+		n3 = -n3;
+		n4 = -n4;
+		return n4 - n3;
+	}
+
+	Decimal a;
+	Integer nn1 = n1.numerator * lcm(n1.denominator, n2.denominator) / n1.denominator, nn2 = n2.numerator * lcm(n1.denominator, n2.denominator) / n2.denominator;
+	string num1, num2;
+	vector<int> ans;
+	num1 = nn1.number;
+	num2 = nn2.number;
+
+	//check if the answer is positive
+	if (num1.length() > num2.length()) {}
+	else if (num2.length() > num1.length()) {
+		swap(num1, num2);
+		a.positive = -1;
+	}
+	else {
+		for (int i = num1.length() - 1; i >= 0; i--) {
+			if (num1[i] > num2[i]) {
+				break;
+			}
+			if (num1[i] < num2[i]) {
+				swap(num1, num2);
+				a.positive = -1;
+				break;
+			}
+		}
+	}
+
+	//substraction
+	int borrow = 0, num1_len = num1.length(), num2_len = num2.length();
+	for (int i = 0; i < num1_len; i++) {
+		if (i < num2_len) {
+			int t = (num1[i] - '0') - (num2[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num1[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+	}
+
+	//clear redundant zeros ex.1000 - 999 = 0001 -> 1
+	for (int i = ans.size() - 1; i > 0; i--) {
+		if (ans[i] != 0)
+			break;
+		ans.pop_back();
+	}
+
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+
+	a.numerator.number = temp;
+	a.denominator = lcm(n1.denominator, n2.denominator);
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = a.numerator.positive;
+	return a;
+}
+
+Decimal operator*(const Decimal& num1, const Decimal& num2) {
+	if (num1.positive == -1 && num2.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Decimal n3 = num2; n3 = -n3;
+		return n2 * n3;
+	}
+	else if (num1.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Decimal n3 = n2 * num2;
+		return -n3;
+	}
+	else if (num2.positive == -1) {
+		Decimal n2 = num2; n2 = -n2;
+		Decimal n3 = num1 * n2;
+		return -n3;
+	}
+
+	Decimal a;
+	a.numerator = num1.numerator * num2.numerator;
+	a.denominator = num1.denominator * num2.denominator;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = num1.positive * num2.positive;
+	return a;
+}
+
+Decimal operator/(const Decimal& num1, const Decimal& num2) {
+	if (num2.numerator.number == "0") {
+		Decimal error;
+		error.positive = 4;
+		return error;
+	}
+	if (num1.positive == -1 && num2.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Decimal n3 = num2; n3 = -n3;
+		return n2 / n3;
+	}
+	else if (num1.positive == -1) {
+		Decimal n2 = num1; n2 = -n2;
+		Decimal n3 = n2 / num2;
+		return -n3;
+	}
+	else if (num2.positive == -1) {
+		Decimal n2 = num2; n2 = -n2;
+		Decimal n3 = num1 / n2;
+		return -n3;
+	}
+
+	Decimal a;
+	a.numerator = num1.numerator * num2.denominator;
+	a.denominator = num1.denominator * num2.numerator;
+	reduct_fraction(a.numerator, a.denominator);
+	a.number = divide(a.numerator, a.denominator);
+	a.positive = num1.positive * num2.positive;
+	return a;
+}
+
+Decimal factorial(const Decimal& num) {
+	if (num.positive != -1 && num.positive != 1) { Decimal X; X.positive = 2; return X; }
+	bool check = false;
+	for_each(num.number.begin(), num.number.begin() + 99, [&check](char w) {if (w != '0') { check = true; }});
+	if (check) {
+		Decimal X; X.positive = 2; return X;
+	}
+	Decimal one; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+	Decimal s = one, now = num;
+	if (num.number == "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
+		return one;
+	}
+	while (now.number != one.number) {
+		s = s * now;
+		now = now - one;
+	}
+	return s;
+}
+
+Decimal power(const Decimal& base, const Integer& exp) {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
+	Decimal zero, one; zero.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+	if (exp.number == "0") { return one; }
+	if (base.number == zero.number) { return zero; }
+	Decimal re = base; Integer tmp = exp;
+	while (tmp.number != "1") { re = re * base; tmp = tmp - one; }
+	if (exp.positive == 1) {
+		return re;
+	}
+	else {
+		if (exp.positive == -1) {
+			return one / re;
+		}
+	}
+}
+
+Decimal power(const Decimal& base, const Decimal& exp) {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
+	Decimal b = base, e = exp, one, two, zero;
+	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
+	if (exp.number == zero.number) { return one; }
+	if (b.number == zero.number) { return zero; }
+
+	bool check = false;
+	for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
+	if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
+	if (check) { Decimal X; X.positive = 3; return X; }
+
+	if (exp.number[99] == '5') {
+		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
+		e = e * two;
+		Decimal re = base;
+		while (e.number != one.number) {
+			re = re * base;
+			e = e - one;
+		}
+		Decimal next, now = re / two; next.number = "0";
+		while (next.number != now.number) {
+			next = ((now * now) + re) / (two * now);
+			swap(next, now);
+		}
+		if (exp.positive == -1) {
+			return one / now;
+		}
+		else {
+			if (exp.positive == 1) {
+				return now;
+			}
+		}
+	}
+	else {
+		Decimal re = base;
+		while (e.number != one.number) {
+			re = re * base;
+			e = e - one;
+		}
+		if (exp.positive == -1) {
+			return one / re;
+		}
+		else {
+			if (exp.positive == 1) {
+				return re;
+			}
+		}
+	}
+}
+
+void Decimal::operator=(const NumberObject& input) {
+	number = input.number;
+	positive = input.positive;
+	point_index = input.point_index;
+}
+
+Decimal Decimal::operator-() {
+	if (this->number != "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
+		this->positive *= -1;
+	}
+	return *this;
+}
+
+Decimal::operator Integer() {
+	Integer tmp;
+	string str = this->number;
+	if (str.back() == '0')
+		tmp.positive = 1;
+	else
+		tmp.positive = this->positive;
+	tmp.number = str.substr(100);
+	return tmp;
+}
+
+NumberObject::NumberObject() {
+	positive = -128;
+	number = "";
+	point_index = 0;
+}
+
+string divide(const Integer& num1, const Integer& num2) {
+	Integer n1 = num1, n2 = num2;
+	n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number;
+	n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
+	string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	if (num1.number == t) {
+		return t;
+	}
+
+	while (n1.number.length() > n2.number.length()) {
+		t = "0" + t;
+		n2.number = "0" + n2.number;
+	}
+
+	for (int i = t.length() - 1; i > -1; i--) {
+		int m = 0;
+		while (1) {
+			Integer A;
+			A = n1 - n2;
+			// cout << A << endl;
+			if (A.positive < 0) { break; }
+			n1 = n1 - n2;
+			m++;
+		}
+		t[i] = m + '0';
+		m = 0;
+		n2.number.erase(n2.number.begin());
+	}
+	while (t[t.length() - 1] == '0' && t.length() > 101) {
+		t.pop_back();
+	}
+
+	return t;
 }
