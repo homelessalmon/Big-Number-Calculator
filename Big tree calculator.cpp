@@ -2,8 +2,7 @@
 #include<string>
 #include "Big tree calculator.h"
 
-int order_of(const string& formula, char type, int pos)
-{
+int order_of(const string& formula, char type, int pos) {
 	int order = 0;
 	for (int i = 0; i < pos; i++) { //這是第幾個n
 		if (formula[i] == type) {
@@ -13,8 +12,7 @@ int order_of(const string& formula, char type, int pos)
 	return order;
 }
 
-int formula_factorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
-{
+int formula_factorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '!') {
 			if (formula[i - 1] == 'i') {
@@ -37,9 +35,9 @@ int formula_factorial(string& formula, vector<Integer>& intlist, vector<Decimal>
 	return 0;
 }
 
-int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
-{
-	for (int i = formula.size() - 1; i >= 0; i++) {
+
+int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
+	for (int i = formula.size() - 1; i >= 0; i--) {
 		if (formula[i] == '^') {
 			if (formula[i - 1] == 'i') {
 				int order = order_of(formula, 'i', i - 1);
@@ -83,8 +81,7 @@ int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& de
 	return 0;
 }
 
-int positivity(string sign)
-{
+int positivity(string sign) {
 	int positivity = 1;
 	for (int i = 0; i < sign.size(); i++) {
 		if (sign[i] == '+') {
@@ -100,9 +97,7 @@ int positivity(string sign)
 	return positivity;
 }
 
-
-int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
-{
+int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	if (formula[0] == '+' || formula[0] == '-') { //如--++-+n = -n
 		int i = 0;
 		while (formula[i] != 'd' && formula[i] != 'i') {
@@ -123,7 +118,7 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 		formula.erase(0, i);
 	}
 
-	for (int i = formula.size() - 1; i >= 1; i++) {
+	for (int i = formula.size() - 1; i >= 1; i--) {
 		if (formula[i] == '+' || formula[i] == '-') { //d+--+++i = d+i
 			if (formula[i + 1] != 'd' && formula[i + 1] != 'i') {
 				return 1;
@@ -170,8 +165,7 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 	return 0;
 }
 
-int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
-{
+int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '*') {
 			if (formula[i - 1] == 'i') {
@@ -256,8 +250,7 @@ int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 	return 0;
 }
 
-int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
-{
+int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '+') {
 			if (formula[i - 1] == 'i') {
@@ -371,7 +364,10 @@ void Big_tree_calculator::string_process(string input)
 {
 	vector<string> input_seg;
 	string_segmentation(input, input_seg, " ", '\"');
-	if (input_seg[0] == "Integer") {
+	if (input_seg.size() == 0) {
+		return;
+	}
+	else if (input_seg[0] == "Integer") {
 		if (variableList.find(input_seg[1]) != -1) {
 			variableList.del_var(input_seg[1]);
 		}
@@ -418,7 +414,7 @@ void Big_tree_calculator::string_process(string input)
 			}
 		}
 	}
-	else if (input_seg[1] == "=") {
+	else if (input_seg.size() > 1 && input_seg[1] == "=") {
 		NumberObject temp = value_process(input_seg[2]);
 		int v = variableList.find(input_seg[0]);
 		if (v <= 100) {
@@ -448,8 +444,9 @@ void Big_tree_calculator::string_process(string input)
 		//將input_seg[0]的變數賦值為input_seg[2]
 	}
 	else {
-		cout << value_process(input_seg[0]);
+		cout << value_process(input_seg[0]) << endl;
 	}
+	return;
 }
 
 NumberObject Big_tree_calculator::value_process(string input)
@@ -459,7 +456,7 @@ NumberObject Big_tree_calculator::value_process(string input)
 	vector<int> int_pos;
 	vector<int> dec_pos;
 	int cur = 0;
-	NumberObject error(-128);
+	NumberObject error;
 	while (1) {
 		//如果讀到數字就將其暫存為一個變數
 		if ((input[cur] <= '9' && input[cur] >= '0')) {
@@ -473,14 +470,14 @@ NumberObject Big_tree_calculator::value_process(string input)
 			end = cur;
 			int length = end - begin;
 			switch (is_Decimal) {
-			case 1: {
+			case 0: {
 				Integer temp;
 				temp.number = input.substr(begin, length);
 				num_int.push_back(temp);
 				int_pos.push_back(begin);
 				break;
 			}
-			case 0: {
+			case 1: {
 				Decimal temp;
 				temp.number = input.substr(begin, length);
 				num_dec.push_back(temp);
