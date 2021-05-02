@@ -30,7 +30,6 @@ int Variable_list::find(string name)
 	{
 		if (name == variable_name_D[i])
 		{
-			return_ptr = &Number_D[i];
 			return i + 100;
 		}
 	}
