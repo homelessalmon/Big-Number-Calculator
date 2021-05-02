@@ -6,22 +6,13 @@
 
 using namespace std;
 
-class Big_tree_calculator
-{
+class Big_tree_calculator {
 public:
 
 	//variable
 	Variable_list variableList;
 	//function
-	void exe()
-	{
-		string input;
-		while (1) {
-			getline(cin, input);
-			string_process(input);
-			
-		}
-	}
+	void exe();
 	void string_process(string);
 	NumberObject value_process(string input);
 	friend void string_segmentation(string, vector<string>&, string, char);
