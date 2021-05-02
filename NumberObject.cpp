@@ -369,6 +369,7 @@ Integer factorial(const Integer& num)
 
 Integer power(const Integer& base, const Integer& exp)
 {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Integer X; X.positive = 3; return X; }
     Integer s = base, temp = exp, one; one.number = "1";
     if (exp.number == "0" || exp.positive == -1) { Integer tmp; tmp.number = "1"; return tmp; }
     while (temp.number != "1") { s = s * base; temp = temp - one; }
@@ -377,6 +378,7 @@ Integer power(const Integer& base, const Integer& exp)
 
 Integer power(const Integer& base, const Decimal& exp)
 {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Integer X; X.positive = 3; return X; }
     Decimal b, e = exp, one, two, zero; b.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + base.number;
     zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
     if (exp.number == zero.number) { return one; }
