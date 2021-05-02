@@ -3,7 +3,7 @@
 #include<string>
 #include"NumberObject.h"
 #include"Variable_handling.h"
-#define TEST1 1
+#define TEST1 0
 
 using namespace std;
 
