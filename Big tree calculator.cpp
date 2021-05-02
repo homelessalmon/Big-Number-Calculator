@@ -402,7 +402,8 @@ void Big_tree_calculator::string_process(string input) {
 		// todo
 		if (input_seg.size() == 2) {
 			Decimal decimal;
-			decimal.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+			decimal.denominator.number = "1";
+			decimal.numerator.number = "0";
 			variableList.push_pack(input_seg[1], decimal);
 		}
 		else {
@@ -460,13 +461,13 @@ void Big_tree_calculator::string_process(string input) {
 	return;
 }
 
-NumberObject Big_tree_calculator::value_process(string input) {
+Decimal Big_tree_calculator::value_process(string input) {
 	vector<Integer> num_int;
 	vector<Decimal> num_dec;
 	vector<char> op;
 	string formula = "";
 	int cur = 0;
-	NumberObject error;
+	Decimal error;
 	while (1) {
 		//如果讀到數字就將其暫存為一個變數
 		if ((input[cur] <= '9' && input[cur] >= '0')) {
@@ -508,8 +509,8 @@ NumberObject Big_tree_calculator::value_process(string input) {
 					denominator.number = denominator.number + "0";
 				}
 				Decimal temp;
-				//temp.numerator = numerator;
-				//temp.denominator = denominator;
+				temp.numerator = numerator;
+				temp.denominator = denominator;
 				num_dec.push_back(temp);
 				formula = formula + 'd';
 				break;
@@ -545,7 +546,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				}
 			}
 			int length = end - begin;
-			NumberObject parenthese = value_process(input.substr(begin, length));
+			Decimal parenthese = value_process(input.substr(begin, length));
 			if (parenthese.point_index == 0) {
 				Integer temp;
 				temp = parenthese;
@@ -696,7 +697,10 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	}
 
 	if (num_int.size() == 1) {
-		return num_int[0];
+		Decimal temp;
+		temp = num_int[0];
+		temp.point_index = 0;
+		return temp;
 	}
 	else if (num_dec.size() == 1) {
 		return num_dec[0];
