@@ -464,9 +464,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	vector<Integer> num_int;
 	vector<Decimal> num_dec;
 	vector<char> op;
-	vector<int> int_pos;
-	vector<int> dec_pos;
-	vector<int> op_pos;
+	string formula = "";
 	int cur = 0;
 	NumberObject error;
 	while (1) {
@@ -489,7 +487,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				Integer temp;
 				temp.number = temp_string;
 				num_int.push_back(temp);
-				int_pos.push_back(begin);
+				formula = formula + 'i';
 				break;
 			}
 			case 1: {
@@ -513,7 +511,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				//temp.numerator = numerator;
 				//temp.denominator = denominator;
 				num_dec.push_back(temp);
-				dec_pos.push_back(begin);
+				formula = formula + 'd';
 				break;
 			}
 			default:
@@ -547,18 +545,18 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				}
 			}
 			int length = end - begin;
-			NumberObject P = value_process(input.substr(begin, length));
-			if (P.point_index == 0) {
+			NumberObject parenthese = value_process(input.substr(begin, length));
+			if (parenthese.point_index == 0) {
 				Integer temp;
-				temp = P;
+				temp = parenthese;
 				num_int.push_back(temp);
-				int_pos.push_back(begin);
+				formula = formula + 'i';
 			}
 			else {
 				Decimal temp;
-				temp = P;
+				temp = parenthese;
 				num_dec.push_back(temp);
-				dec_pos.push_back(begin);
+				formula = formula + 'd';
 			}
 		}
 		else if (input[cur] == ')') {
@@ -577,11 +575,11 @@ NumberObject Big_tree_calculator::value_process(string input) {
 			int v = variableList.find(input.substr(begin, length));
 			if (v >= 0 && v <= 100) {
 				num_int.push_back(variableList.Number_I[v]);
-				int_pos.push_back(begin);
+				formula = formula + 'i';
 			}
 			else if (v > 100) {
 				num_dec.push_back(variableList.Number_D[v - 100]);
-				dec_pos.push_back(begin);
+				formula = formula + 'd';
 			}
 			else if (v == -1) {
 				error.positive = 10;
@@ -590,7 +588,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 		}
 		else if (input[cur] == '+' || input[cur] == '-' || input[cur] == '*' || input[cur] == '/' || input[cur] == '^' || input[cur] == '!') {
 			op.push_back(input[cur]);
-			op_pos.push_back(cur);
+			formula = formula + input[cur];
 			cur++;
 		}
 		//讀到結尾就結束
@@ -605,51 +603,6 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	}
 
 
-	//用merge還原算式，並且變數以i、d儲存
-	int_pos.push_back(65536);
-	dec_pos.push_back(65536);
-	string num;
-	vector<int> numpos;
-	int int_pos_check = 0, dec_pos_check = 0;
-	while (1) {
-		if (int_pos[int_pos_check] < dec_pos[dec_pos_check]) {
-			num = num + 'i';
-			numpos.push_back(int_pos[int_pos_check]);
-			int_pos_check++;
-		}
-		else {
-			num = num + 'd';
-			numpos.push_back(dec_pos[dec_pos_check]);
-			dec_pos_check++;
-		}
-		if (int_pos[int_pos_check] == 65536 && dec_pos[dec_pos_check] == 65536) {
-			break;
-		}
-	}
-	int_pos.pop_back();
-	dec_pos.pop_back();
-
-	string formula;
-	op_pos.push_back(65536);
-	numpos.push_back(65536);
-	int num_pos_check = 0, op_pos_check = 0;
-	while (1) {
-		if (numpos[num_pos_check] < op_pos[op_pos_check]) {
-			formula = formula + num[num_pos_check];
-			num_pos_check++;
-		}
-		else {
-			formula = formula + op[op_pos_check];
-			op_pos_check++;
-		}
-		if (numpos[num_pos_check] == 65536 && op_pos[op_pos_check] == 65536) {
-			break;
-		}
-	}
-	numpos.pop_back();
-	op_pos.pop_back();
-
-	//這塊應該有更好的寫法但我一時間想不到 先這樣
 	//! :要確保前面只能是數
 	//^ :要確保前後都是數，後面可以是+-
 	//*/:要確保前後都是數，後面可以是+-
