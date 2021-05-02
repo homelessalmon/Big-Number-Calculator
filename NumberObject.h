@@ -51,6 +51,10 @@ public:
 	friend Integer factorial(const Integer&);
 	friend Integer power(const Integer& base, const Integer& exp);
 	friend Integer power(const Integer& base, const Decimal& exp);
+	friend bool operator >(const Integer&, const Integer&);
+	friend bool operator >=(const Integer&, const Integer&);
+	friend Integer operator%(const Integer&, const Integer&);
+	friend Integer gcd(const Integer&, const Integer&);
 	friend Integer lcm(const Integer&, const Integer&);
 	void operator=(const NumberObject&);
 	Integer operator-();
