@@ -1516,6 +1516,13 @@ Decimal power(const Decimal& base, const Decimal& exp)
     }
 }
 
+void reduct_fraction(Integer& numerator, Integer& denominator)
+{
+    Integer A = gcd(numerator, denominator);
+    numerator = numerator / A;
+    denominator = denominator / A;
+}
+
 void Decimal::operator=(const NumberObject& input) {
     number = input.number;
     positive = input.positive;
