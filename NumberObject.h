@@ -91,3 +91,5 @@ public:
 	Decimal operator-();
 	operator Integer();
 };
+
+string divide(const Integer&, const Integer&);
