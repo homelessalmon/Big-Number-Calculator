@@ -162,8 +162,8 @@ Integer operator-(const Integer& n1, const Integer& n2)
 else if (n2.positive == -1 && n1.positive == 1) {
 	Integer n3 = n2;
 	n3 = -n3;
-	Integer n4 = n3 + n2;
-	return n3;
+	Integer n4 = n3 + n1;
+	return n4;
 }
 else if (n1.positive == -1 && n2.positive == -1) {
 	Integer n3 = n1;
