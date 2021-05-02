@@ -373,7 +373,7 @@ void Big_tree_calculator::string_process(string input) {
 	}
 	vector<string> input_seg;
 	string_segmentation(input, input_seg, " ", '\"');
-	if (input_seg[0] == "Integer") {
+	if (input_seg[0] == "Integer" || input_seg[0] == "integer" || input_seg[0] == "Int" || input_seg[0] == "int") {
 		if (variableList.find(input_seg[1]) != -1) {
 			variableList.del_var(input_seg[1]);
 		}
@@ -399,6 +399,7 @@ void Big_tree_calculator::string_process(string input) {
 		}
 	}
 	else if (input_seg[0] == "Decimal") {
+		// todo
 		if (input_seg.size() == 2) {
 			Decimal decimal;
 			decimal.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
@@ -448,7 +449,7 @@ void Big_tree_calculator::string_process(string input) {
 			}
 		}
 		else {
-			cout << "10" << endl;
+			cout << "errorcode:10" << endl;
 			return;
 		}
 		//將input_seg[0]的變數賦值為input_seg[2]
@@ -463,9 +464,9 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	vector<Integer> num_int;
 	vector<Decimal> num_dec;
 	vector<char> op;
-	vector<int> op_pos;
 	vector<int> int_pos;
 	vector<int> dec_pos;
+	vector<int> op_pos;
 	int cur = 0;
 	NumberObject error;
 	while (1) {
@@ -474,31 +475,50 @@ NumberObject Big_tree_calculator::value_process(string input) {
 			int begin = cur, end, is_Decimal = 0;
 			while ((input[cur] <= '9' && input[cur] >= '0') || (input[cur] == '.')) {
 				if ((input[cur] == '.')) {
-					is_Decimal = 1;
+					is_Decimal++;
 				}
 				cur++;
 			}
 			end = cur;
 			int length = end - begin;
-			string tempS;
+			string temp_string;
 			switch (is_Decimal) {
 			case 0: {
+				temp_string = input.substr(begin, length);
+				reverse(temp_string.begin(), temp_string.end());
 				Integer temp;
-				tempS = input.substr(begin, length);
-				reverse(tempS.begin(), tempS.end());
-				temp.number = tempS;
+				temp.number = temp_string;
 				num_int.push_back(temp);
 				int_pos.push_back(begin);
 				break;
 			}
 			case 1: {
+				temp_string = input.substr(begin, length);
+				reverse(temp_string.begin(), temp_string.end());
+				char point_pos;
+				for (point_pos = 0; point_pos < temp_string.size(); point_pos++) {
+					if (temp_string[point_pos] == '.') {
+						temp_string.erase(point_pos, 1);
+						break;
+					}
+				}
+				Integer numerator;
+				numerator.number = temp_string;
+				Integer denominator;
+				denominator.number = "1";
+				for (point_pos; point_pos > 0; point_pos--) {
+					denominator.number = denominator.number + "0";
+				}
 				Decimal temp;
-				temp.number = input.substr(begin, length);
+				//temp.numerator = numerator;
+				//temp.denominator = denominator;
 				num_dec.push_back(temp);
 				dec_pos.push_back(begin);
 				break;
 			}
 			default:
+				error.positive = 11;
+				return error;
 				break;
 			}
 		}
