@@ -61,6 +61,8 @@ class Decimal : public NumberObject
 public:
 	//variable
 	//function
+	Integer numerator;
+	Integer denominator;
 	Decimal();
 	Decimal(const Decimal& reference);
 	Decimal(const string a_string);//example: BigNumber A="3*1+2.5";
