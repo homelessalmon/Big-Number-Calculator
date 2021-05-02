@@ -1548,3 +1548,45 @@ NumberObject::NumberObject()
     number = "";
     point_index = 0;
 }
+
+string divide(const Integer& num1, const Integer& num2)
+{
+
+    Integer n1 = num1, n2 = num2;
+    n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number;
+    n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
+    string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    if (num1.number == t)
+    {
+        return t;
+    }
+
+    while (n1.number.length() > n2.number.length())
+    {
+        t = "0" + t;
+        n2.number = "0" + n2.number;
+    }
+
+    for (int i = t.length() - 1; i > -1; i--)
+    {
+        int m = 0;
+        while (1)
+        {
+            Integer A;
+            A = n1 - n2;
+           // cout << A << endl;
+            if (A.positive < 0) { break; }
+            n1 = n1 - n2;
+            m++;
+        }
+        t[i] = m + '0';
+        m = 0;
+        n2.number.erase(n2.number.begin());
+    }
+    while (t[t.length() - 1] == '0'&& t.length()>101)
+    {
+        t.pop_back();
+    }
+
+    return t;
+}
