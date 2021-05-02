@@ -1,8 +1,10 @@
 #include<vector>
 #include<string>
 #include "Big tree calculator.h"
+#define TEST2 0
 
-void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
+void string_segmentation(string input, vector<string>& seg, string segflag, char packflag)
+{
 	int cur = 0, nextpack = 0, nextseg = 0;
 	while (nextpack != string::npos && nextseg != string::npos) {
 		nextseg = input.find_first_of(segflag, cur);
@@ -26,8 +28,8 @@ void string_segmentation(string input, vector<string>& seg, string segflag, char
 	}
 }
 
-
-void Big_tree_calculator::string_process(string input) {
+void Big_tree_calculator::string_process(string input)
+{
 	vector<string> input_seg;
 	string_segmentation(input, input_seg, " ", '\"');
 	if (input_seg[0] == "Integer") {
@@ -35,7 +37,8 @@ void Big_tree_calculator::string_process(string input) {
 			variableList.del_var(input_seg[1]);
 		}
 		if (input_seg.size() == 2) {
-			Integer integer(0);
+			Integer integer;
+			integer.number = "0";
 			variableList.push_pack(input_seg[1], integer);
 		}
 		else {
@@ -56,7 +59,8 @@ void Big_tree_calculator::string_process(string input) {
 	}
 	else if (input_seg[0] == "Decimal") {
 		if (input_seg.size() == 2) {
-			Decimal decimal(0);
+			Decimal decimal;
+			decimal.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 			variableList.push_pack(input_seg[1], decimal);
 		}
 		else {
@@ -102,14 +106,15 @@ void Big_tree_calculator::string_process(string input) {
 				variableList.Number_D[v - 100] = decimal;
 			}
 		}
-		//±Ninput_seg[0]ªºÅÜ¼Æ½á­È¬°input_seg[2]
+		//å°‡input_seg[0]çš„è®Šæ•¸è³¦å€¼ç‚ºinput_seg[2]
 	}
 	else {
 		cout << value_process(input_seg[0]);
 	}
 }
 
-NumberObject Big_tree_calculator::value_process(string input) {
+NumberObject Big_tree_calculator::value_process(string input)
+{
 	vector<Integer> num_int;
 	vector<Decimal> num_dec;
 	vector<int> int_pos;
@@ -117,7 +122,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	int cur = 0;
 	NumberObject error(-128);
 	while (1) {
-		//¦pªGÅª¨ì¼Æ¦r´N±N¨ä¼È¦s¬°¤@­ÓÅÜ¼Æ
+		//å¦‚æœè®€åˆ°æ•¸å­—å°±å°‡å…¶æš«å­˜ç‚ºä¸€å€‹è®Šæ•¸
 		if ((input[cur] <= '9' && input[cur] >= '0')) {
 			int begin = cur, end, is_Decimal = 0;
 			while ((input[cur] <= '9' && input[cur] >= '0') || (input[cur] == '.')) {
@@ -130,13 +135,15 @@ NumberObject Big_tree_calculator::value_process(string input) {
 			int length = end - begin;
 			switch (is_Decimal) {
 			case 1: {
-				Integer temp(input.substr(begin, length));
+				Integer temp;
+				temp.number = input.substr(begin, length);
 				num_int.push_back(temp);
 				int_pos.push_back(begin);
 				break;
 			}
 			case 0: {
-				Decimal temp(input.substr(begin, length));
+				Decimal temp;
+				temp.number = input.substr(begin, length);
 				num_dec.push_back(temp);
 				dec_pos.push_back(begin);
 				break;
@@ -146,7 +153,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 			}
 		}
 
-		//Åª¨ì¬A¸¹´N»¼°j¡A±N¬A¸¹¤ºªºµ²ªG§@¬°ÅÜ¼Æ¼È¦s
+		//è®€åˆ°æ‹¬è™Ÿå°±éè¿´ï¼Œå°‡æ‹¬è™Ÿå…§çš„çµæœä½œç‚ºè®Šæ•¸æš«å­˜
 		else if (input[cur] == '(') {
 			int begin = cur + 1, end;
 			int parenthese_deepth = 0;
@@ -163,7 +170,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				}
 				cur++;
 				if (cur == input.size()) {
-					//¦pªGparenthese_deepth¦X²zªº¸Ü¥i¥H°µ¨¾§b¡H
+					//å¦‚æœparenthese_deepthåˆç†çš„è©±å¯ä»¥åšé˜²å‘†ï¼Ÿ
 					error.positive = 20;
 					return error;
 				}
@@ -186,10 +193,10 @@ NumberObject Big_tree_calculator::value_process(string input) {
 			return error;
 		}
 
-		//¦pªG¬OÅÜ¼Æ¦W´N´M§ä¸ÓÅÜ¼Æ¨Ã±N­È¦s¤J¼È¦sÅÜ¼ÆÄæ
-		else if ((input[cur] <= 'a' && input[cur] >= 'z')||(input[cur] <= 'A' && input[cur] >= 'Z')) {
+		//å¦‚æœæ˜¯è®Šæ•¸åå°±å°‹æ‰¾è©²è®Šæ•¸ä¸¦å°‡å€¼å­˜å…¥æš«å­˜è®Šæ•¸æ¬„
+		else if ((input[cur] <= 'a' && input[cur] >= 'z') || (input[cur] <= 'A' && input[cur] >= 'Z')) {
 			int begin = cur, end;
-			while ((input[cur] <= '9' && input[cur] >= '0') || (input[cur] <= 'a' && input[cur] >= 'z')||(input[cur] <= 'A' && input[cur] >= 'Z')) {
+			while ((input[cur] <= '9' && input[cur] >= '0') || (input[cur] <= 'a' && input[cur] >= 'z') || (input[cur] <= 'A' && input[cur] >= 'Z')) {
 				cur++;
 			}
 			end = cur;
@@ -200,7 +207,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				int_pos.push_back(begin);
 			}
 			else if (v > 100) {
-				num_dec.push_back(variableList.Number_D[v-100]);
+				num_dec.push_back(variableList.Number_D[v - 100]);
 				dec_pos.push_back(begin);
 			}
 			else if (v == -1) {
@@ -208,20 +215,20 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				return error;
 			}
 		}
-		//find()«ç»ò¥Î
+		//find()æ€éº¼ç”¨
 
-		//Åª¨ìµ²§À´Nµ²§ô
+		//è®€åˆ°çµå°¾å°±çµæŸ
 		else if (input[cur] == '\0') {
 			break;
 		}
 
-		//Åª¨ì¹Bºâ¤l©Î¬OªÅ®æ´N¤£ºŞ
+		//è®€åˆ°é‹ç®—å­æˆ–æ˜¯ç©ºæ ¼å°±ä¸ç®¡
 		else {
 			cur++;
 		}
 	}
 
-	//¦s¤J¹Bºâ¤l
+	//å­˜å…¥é‹ç®—å­
 	vector<char> op;
 	vector<int> op_pos;
 	for (int i = 0; i < input.size(); i++) {
@@ -231,28 +238,28 @@ NumberObject Big_tree_calculator::value_process(string input) {
 		}
 	}
 
-	
-	//¥ÎmergeÁÙ­ìºâ¦¡¡A¨Ã¥BÅÜ¼Æ¥Hi¡BdÀx¦s
+
+	//ç”¨mergeé‚„åŸç®—å¼ï¼Œä¸¦ä¸”è®Šæ•¸ä»¥iã€då„²å­˜
 	int_pos.push_back(65536);
 	dec_pos.push_back(65536);
 	string num;
 	vector<int> numpos;
 	int int_pos_check = 0, dec_pos_check = 0;
 	while (1) {
-		if (int_pos[int_pos_check] < dec_pos[dec_pos_check] ) {
+		if (int_pos[int_pos_check] < dec_pos[dec_pos_check]) {
 			num = num + 'i';
 			numpos.push_back(int_pos[int_pos_check]);
-            int_pos_check++;
-        }
-        else {
+			int_pos_check++;
+		}
+		else {
 			num = num + 'd';
 			numpos.push_back(dec_pos[dec_pos_check]);
-            dec_pos_check++;
-        }
+			dec_pos_check++;
+		}
 		if (int_pos[int_pos_check] == 65536 && dec_pos[dec_pos_check] == 65536) {
 			break;
 		}
-    }
+	}
 	int_pos.pop_back();
 	dec_pos.pop_back();
 
@@ -261,28 +268,28 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	numpos.push_back(65536);
 	int num_pos_check = 0, op_pos_check = 0;
 	while (1) {
-		if (numpos[num_pos_check] < op_pos[op_pos_check] ) {
+		if (numpos[num_pos_check] < op_pos[op_pos_check]) {
 			formula = formula + num[num_pos_check];
-            num_pos_check++;
-        }
-        else {
+			num_pos_check++;
+		}
+		else {
 			formula = formula + op[op_pos_check];
-            op_pos_check++;
-        }
+			op_pos_check++;
+		}
 		if (numpos[num_pos_check] == 65536 && op_pos[op_pos_check] == 65536) {
 			break;
 		}
-    }
+	}
 	numpos.pop_back();
 	op_pos.pop_back();
 
-	//³o¶ôÀ³¸Ó¦³§ó¦nªº¼gªk¦ı§Ú¤@®É¶¡·Q¤£¨ì ¥ı³o¼Ë
-	//! :­n½T«O«e­±¥u¯à¬O¼Æ
-	//^ :­n½T«O«e«á³£¬O¼Æ¡A«á­±¥i¥H¬O+-
-	//*/:­n½T«O«e«á³£¬O¼Æ¡A«á­±¥i¥H¬O+-
-	//+-:­n½T«O«e«á¥u¯à¬O+-»P¼Æ
-	//½T«O¨â­Ó¼Æ¤¤¶¡¤@©w¦³¹Bºâ¤l
-	//¦³°İÃD´N¦^¶Ç¿é¤J¿ù»~
+	//é€™å¡Šæ‡‰è©²æœ‰æ›´å¥½çš„å¯«æ³•ä½†æˆ‘ä¸€æ™‚é–“æƒ³ä¸åˆ° å…ˆé€™æ¨£
+	//! :è¦ç¢ºä¿å‰é¢åªèƒ½æ˜¯æ•¸
+	//^ :è¦ç¢ºä¿å‰å¾Œéƒ½æ˜¯æ•¸ï¼Œå¾Œé¢å¯ä»¥æ˜¯+-
+	//*/:è¦ç¢ºä¿å‰å¾Œéƒ½æ˜¯æ•¸ï¼Œå¾Œé¢å¯ä»¥æ˜¯+-
+	//+-:è¦ç¢ºä¿å‰å¾Œåªèƒ½æ˜¯+-èˆ‡æ•¸
+	//ç¢ºä¿å…©å€‹æ•¸ä¸­é–“ä¸€å®šæœ‰é‹ç®—å­
+	//æœ‰å•é¡Œå°±å›å‚³è¼¸å…¥éŒ¯èª¤
 	if (formula[0] == '!' || formula[0] == '^' || formula[0] == '*' || formula[0] == '/') {
 		error.positive = 30;
 		return error;
@@ -314,7 +321,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				return error;
 			}
 			break;
-		case 'd' :
+		case 'd':
 		case 'i':
 			if (formula[i - 1] == 'd' || formula[i + 1] == 'd' || formula[i - 1] == 'i' || formula[i + 1] == 'i') {
 				error.positive = 35;
@@ -338,8 +345,8 @@ NumberObject Big_tree_calculator::value_process(string input) {
 			return num_dec[i];
 		}
 	}
-	
-	if (formula_facrorial(formula, num_int, num_dec) != 0) {
+
+	if (formula_factorial(formula, num_int, num_dec) != 0) {
 		error.positive = 40;
 		return error;
 	}
@@ -377,9 +384,11 @@ NumberObject Big_tree_calculator::value_process(string input) {
 	}
 }
 
-int order_of(const string& formula, char type, int pos) {
+#if TEST2
+int order_of(const string& formula, char type, int pos)
+{
 	int order = 0;
-	for (int i = 0; i < pos; i++) { //³o¬O²Ä´X­Ón
+	for (int i = 0; i < pos; i++) { //é€™æ˜¯ç¬¬å¹¾å€‹n
 		if (formula[i] == type) {
 			order++;
 		}
@@ -387,19 +396,20 @@ int order_of(const string& formula, char type, int pos) {
 	return order;
 }
 
-int formula_facrorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
+int formula_factorial(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
+{
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '!') {
 			if (formula[i - 1] == 'i') {
 				int order = order_of(formula, 'i', i - 1);
 				intlist[order] = factorial(intlist[order]);
-				formula.erase(i, 1); //§â¹Bºâ§¹ªº¹Bºâ¤l²M°£
+				formula.erase(i, 1); //æŠŠé‹ç®—å®Œçš„é‹ç®—å­æ¸…é™¤
 				i--;
 			}
 			else if (formula[i - 1] == 'd') {
 				int order = order_of(formula, 'd', i - 1);
 				declist[order] = factorial(declist[order]);
-				formula.erase(i, 1); //§â¹Bºâ§¹ªº¹Bºâ¤l²M°£
+				formula.erase(i, 1); //æŠŠé‹ç®—å®Œçš„é‹ç®—å­æ¸…é™¤
 				i--;
 			}
 			else {
@@ -410,7 +420,8 @@ int formula_facrorial(string& formula, vector<Integer>& intlist, vector<Decimal>
 	return 0;
 }
 
-int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
+int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
+{
 	for (int i = formula.size() - 1; i >= 0; i++) {
 		if (formula[i] == '^') {
 			if (formula[i - 1] == 'i') {
@@ -455,7 +466,8 @@ int formula_power(string& formula, vector<Integer>& intlist, vector<Decimal>& de
 	return 0;
 }
 
-int positivity(string sign) {
+int positivity(string sign)
+{
 	int positivity = 1;
 	for (int i = 0; i < sign.size(); i++) {
 		if (sign[i] == '+') {
@@ -471,8 +483,10 @@ int positivity(string sign) {
 	return positivity;
 }
 
-int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
-	if (formula[0] == '+' || formula[0] == '-') { //¦p--++-+n = -n
+
+int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
+{
+	if (formula[0] == '+' || formula[0] == '-') { //å¦‚--++-+n = -n
 		int i = 0;
 		while (formula[i] != 'd' && formula[i] != 'i') {
 			i++;
@@ -501,12 +515,12 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 			while (j > 0 && (formula[j - 1] == '+' || formula[j - 1] == '-')) {
 				j--;
 			}
-			int length; 
+			int length;
 			if (formula[j - 1] == '*' || formula[j - 1] == '/') {
 				j--; // d/-----d j = 2
 			}
 			length = i - j;
-			
+
 			if (length > 0) {
 				if (formula[i + 1] == 'i') {
 					int order = order_of(formula, 'i', i + 1);
@@ -539,7 +553,8 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 	return 0;
 }
 
-int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
+int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
+{
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '*') {
 			if (formula[i - 1] == 'i') {
@@ -624,7 +639,8 @@ int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 	return 0;
 }
 
-int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& declist) {
+int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& declist)
+{
 	for (int i = 0; i < formula.size(); i++) {
 		if (formula[i] == '+') {
 			if (formula[i - 1] == 'i') {
@@ -708,3 +724,4 @@ int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 	}
 	return 0;
 }
+#endif
