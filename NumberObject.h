@@ -5,6 +5,8 @@
 #include<iterator>
 #include<algorithm>
 
+typedef class Decimal Decimal;
+typedef class Integer Integer;
 using namespace std;
 
 
