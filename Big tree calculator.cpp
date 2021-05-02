@@ -337,7 +337,7 @@ int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 
 void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
 	int cur = 0, nextpack = 0, nextseg = 0;
-	while (nextpack != string::npos && nextseg != string::npos) {
+	while (nextpack != string::npos || nextseg != string::npos) {
 		nextseg = input.find_first_of(segflag, cur);
 		nextpack = input.find_first_of(packflag, cur);
 		if (nextpack == string::npos || nextseg < nextpack) {
@@ -360,6 +360,9 @@ void string_segmentation(string input, vector<string>& seg, string segflag, char
 }
 
 void Big_tree_calculator::string_process(string input) {
+	if (input == "") {
+		return;
+	}
 	vector<string> input_seg;
 	string_segmentation(input, input_seg, " ", '\"');
 	if (input_seg[0] == "Integer") {
@@ -447,6 +450,8 @@ void Big_tree_calculator::string_process(string input) {
 NumberObject Big_tree_calculator::value_process(string input) {
 	vector<Integer> num_int;
 	vector<Decimal> num_dec;
+	vector<char> op;
+	vector<int> op_pos;
 	vector<int> int_pos;
 	vector<int> dec_pos;
 	int cur = 0;
@@ -499,6 +504,7 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				}
 				if (parenthese_deepth == 0) {
 					end = cur;
+					cur++;
 					break;
 				}
 				cur++;
@@ -509,15 +515,17 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				}
 			}
 			int length = end - begin;
-			if (value_process(input.substr(begin, length)).point_index == 0) {
+			NumberObject P = value_process(input.substr(begin, length));
+			if (P.point_index == 0) {
 				Integer temp;
-				temp = value_process(input.substr(begin, length));
+				temp = P;
+				num_int.push_back(temp);
 				int_pos.push_back(begin);
-
 			}
 			else {
 				Decimal temp;
-				temp = value_process(input.substr(begin, length));
+				temp = P;
+				num_dec.push_back(temp);
 				dec_pos.push_back(begin);
 			}
 		}
@@ -527,9 +535,9 @@ NumberObject Big_tree_calculator::value_process(string input) {
 		}
 
 		//如果是變數名就尋找該變數並將值存入暫存變數欄
-		else if ((input[cur] <= 'a' && input[cur] >= 'z') || (input[cur] <= 'A' && input[cur] >= 'Z')) {
+		else if ((input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
 			int begin = cur, end;
-			while ((input[cur] <= '9' && input[cur] >= '0') || (input[cur] <= 'a' && input[cur] >= 'z') || (input[cur] <= 'A' && input[cur] >= 'Z')) {
+			while ((input[cur] >= '9' && input[cur] <= '0') || (input[cur] >= 'a' && input[cur] <= 'z') || (input[cur] >= 'A' && input[cur] <= 'Z')) {
 				cur++;
 			}
 			end = cur;
@@ -548,26 +556,19 @@ NumberObject Big_tree_calculator::value_process(string input) {
 				return error;
 			}
 		}
-		//find()怎麼用
-
+		else if (input[cur] == '+' || input[cur] == '-' || input[cur] == '*' || input[cur] == '/' || input[cur] == '^' || input[cur] == '!') {
+			op.push_back(input[cur]);
+			op_pos.push_back(cur);
+			cur++;
+		}
 		//讀到結尾就結束
 		else if (input[cur] == '\0') {
 			break;
 		}
 
-		//讀到運算子或是空格就不管
+		//讀到空格就不管
 		else {
 			cur++;
-		}
-	}
-
-	//存入運算子
-	vector<char> op;
-	vector<int> op_pos;
-	for (int i = 0; i < input.size(); i++) {
-		if (input[i] == '+' || input[i] == '-' || input[i] == '*' || input[i] == '/' || input[i] == '^' || input[i] == '!') {
-			op.push_back(input[i]);
-			op_pos.push_back(i);
 		}
 	}
 
