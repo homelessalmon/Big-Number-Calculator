@@ -173,16 +173,17 @@ int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 				if (formula[i + 1] == 'i') {
 					intlist[order] = intlist[order] * intlist[order + 1];
 					intlist.erase(intlist.begin() + order + 1);
+					formula.erase(i, 2);
 				}
-				else if (formula[i - 1] == 'd') {
+				else if (formula[i + 1] == 'd') {
 					int orderd = order_of(formula, 'd', i - 1);
 					declist[orderd] = intlist[order] * declist[orderd];
 					intlist.erase(intlist.begin() + order);
+					formula.erase(i - 1, 2);
 				}
 				else {
 					return 1;
 				}
-				formula.erase(i, 2);
 				i -= 2;
 			}
 			else if (formula[i - 1] == 'd') {
@@ -211,28 +212,41 @@ int formula_muldiv(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 			if (formula[i - 1] == 'i') {
 				int order = order_of(formula, 'i', i - 1);
 				if (formula[i + 1] == 'i') {
+					if (intlist[order + 1].number == "0") {
+						return 2;
+					}
 					intlist[order] = intlist[order] / intlist[order + 1];
 					intlist.erase(intlist.begin() + order + 1);
+					formula.erase(i, 2);
 				}
-				else if (formula[i - 1] == 'd') {
+				else if (formula[i + 1] == 'd') {
 					int orderd = order_of(formula, 'd', i - 1);
+					if (declist[orderd].numerator.number == "00" || declist[orderd].numerator.number == "0") {
+						return 2;
+					}
 					declist[orderd] = intlist[order] / declist[orderd];
 					intlist.erase(intlist.begin() + order);
+					formula.erase(i - 1, 2);
 				}
 				else {
 					return 1;
 				}
-				formula.erase(i, 2);
 				i -= 2;
 			}
 			else if (formula[i - 1] == 'd') {
 				int order = order_of(formula, 'd', i - 1);
 				if (formula[i + 1] == 'd') {
+					if (declist[order + 1].numerator.number == "00" || declist[order + 1].numerator.number == "0") {
+						return 2;
+					}
 					declist[order] = declist[order] / declist[order + 1];
 					declist.erase(declist.begin() + order + 1);
 				}
 				else if (formula[i + 1] == 'i') {
 					int orderi = order_of(formula, 'i', i + 1);
+					if (intlist[orderi].number == "0") {
+						return 2;
+					}
 					declist[order] = declist[order] / intlist[orderi];
 					intlist.erase(intlist.begin() + orderi);
 				}
@@ -258,16 +272,17 @@ int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 				if (formula[i + 1] == 'i') {
 					intlist[order] = intlist[order] + intlist[order + 1];
 					intlist.erase(intlist.begin() + order + 1);
+					formula.erase(i, 2);
 				}
-				else if (formula[i - 1] == 'd') {
+				else if (formula[i + 1] == 'd') {
 					int orderd = order_of(formula, 'd', i - 1);
 					declist[orderd] = intlist[order] + declist[orderd];
 					intlist.erase(intlist.begin() + order);
+					formula.erase(i - 1, 2);
 				}
 				else {
 					return 1;
 				}
-				formula.erase(i, 2);
 				i -= 2;
 			}
 			else if (formula[i - 1] == 'd') {
@@ -298,16 +313,17 @@ int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 				if (formula[i + 1] == 'i') {
 					intlist[order] = intlist[order] - intlist[order + 1];
 					intlist.erase(intlist.begin() + order + 1);
+					formula.erase(i, 2);
 				}
-				else if (formula[i - 1] == 'd') {
+				else if (formula[i + 1] == 'd') {
 					int orderd = order_of(formula, 'd', i - 1);
 					declist[orderd] = intlist[order] - declist[orderd];
 					intlist.erase(intlist.begin() + order);
+					formula.erase(i - 1, 2);
 				}
 				else {
 					return 1;
 				}
-				formula.erase(i, 2);
 				i -= 2;
 			}
 			else if (formula[i - 1] == 'd') {
@@ -399,7 +415,6 @@ void Big_tree_calculator::string_process(string input) {
 		}
 	}
 	else if (input_seg[0] == "Decimal") {
-		// todo
 		if (input_seg.size() == 2) {
 			Decimal decimal;
 			decimal.denominator.number = "1";
@@ -407,18 +422,13 @@ void Big_tree_calculator::string_process(string input) {
 			variableList.push_pack(input_seg[1], decimal);
 		}
 		else {
-			NumberObject temp = value_process(input_seg[3]);
+			Decimal temp = value_process(input_seg[3]);
 			if (temp.point_index == 0) {
-				Integer integer;
-				integer = temp;
-				Decimal decimal;
-				decimal = integer;
-				variableList.push_pack(input_seg[1], integer);
+				temp.point_index = 1;
+				variableList.push_pack(input_seg[1], temp);
 			}
 			else {
-				Decimal decimal;
-				decimal = temp;
-				variableList.push_pack(input_seg[1], decimal);
+				variableList.push_pack(input_seg[1], temp);
 			}
 		}
 	}
@@ -508,6 +518,7 @@ Decimal Big_tree_calculator::value_process(string input) {
 				for (point_pos; point_pos > 0; point_pos--) {
 					denominator.number = denominator.number + "0";
 				}
+				reverse(denominator.number.begin(), denominator.number.end());
 				Decimal temp;
 				temp.numerator = numerator;
 				temp.denominator = denominator;
@@ -680,9 +691,13 @@ Decimal Big_tree_calculator::value_process(string input) {
 		error.positive = 42;
 		return error;
 	}
-
-	if (formula_muldiv(formula, num_int, num_dec) != 0) {
+	int code = formula_muldiv(formula, num_int, num_dec);
+	if (code == 1) {
 		error.positive = 43;
+		return error;
+	}
+	else if (code == 2) {
+		error.positive = 4;
 		return error;
 	}
 
