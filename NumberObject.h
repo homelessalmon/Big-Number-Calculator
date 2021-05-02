@@ -4,9 +4,8 @@
 #include<vector>
 #include<iterator>
 #include<algorithm>
-
 typedef class Decimal Decimal;
-typedef class Integer Integer;
+
 using namespace std;
 
 
@@ -26,13 +25,13 @@ public:
 	40 = !有問題，41 = ^有問題，42 = 正負號有問題，43 = 乘除有問題，44 = 加減有問題
 	50 = 算式最後還剩下一個以上的數
 	*/
-	NumberObject(int error_code);
+	NumberObject();
 	int point_index;//index of the point,0 if create by default constructor
 	//function
 	friend ostream& operator>>(iostream&, NumberObject&);
 	friend ostream& operator<<(ostream&, NumberObject);
-	operator Integer();//亂用可能會有危險
-	operator Decimal();//亂用可能會有危險
+	//operator Integer();//亂用可能會有危險
+	//operator Decimal();//亂用可能會有危險
 };
 
 class Integer : public NumberObject
