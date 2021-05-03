@@ -87,7 +87,7 @@ Decimal sub(const Decimal& n1, const Decimal& n2) {
 
 ostream& operator<<(ostream& io, NumberObject num) {
 	if (num.positive != 1 && num.positive != -1) {
-		io << "errorcode:" << num.positive;
+		io << "error code:" << num.positive;
 		return io;
 	}
 	if (num.point_index == 0) {
@@ -504,6 +504,7 @@ Integer power(const Integer& base, const Decimal& exp) {
 		}
 	}
 }
+
 bool operator >(const Integer& num1, const Integer& num2) {
 	if (num2.positive > num1.positive) { return false; }
 	if (num1.number == num2.number) { return false; }
@@ -565,22 +566,20 @@ Integer lcm(const Integer& num1, const Integer& num2) {
 	return re;
 }
 
-//void Integer::operator=(const Integer& input) {
-//	number = input.number;
-//	positive = input.positive;
-//	point_index = input.point_index;
-//}
+void Integer::operator=(const NumberObject& input) {
+	number = input.number;
+	positive = input.positive;
+	point_index = input.point_index;
+}
 
-Integer Integer::operator-()
-{
+Integer Integer::operator-() {
 	if (this->number != "0") {
 		this->positive *= -1;
 	}
 	return *this;
 }
 
-Integer::operator Decimal()
-{
+Integer::operator Decimal() {
 	Decimal temp;
 	temp.numerator = *this;
 	temp.denominator.positive = 1;
@@ -607,6 +606,8 @@ Decimal::Decimal(const Decimal& reference) {
 	point_index = reference.point_index;
 	positive = reference.positive;
 }
+
+
 
 Decimal operator+(const Decimal& n1, const Integer& n2) {
 	if (n1.positive == -1 && n2.positive == 1) {
@@ -1267,11 +1268,13 @@ Decimal factorial(const Decimal& num) {
 	return (Decimal)s;
 }
 
-
 Decimal power(const Decimal& base, const Integer& exp) {
 	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
 	Integer one_i; one_i.number = "1";
 	Decimal zero, one; zero.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"; one.numerator.number = "1";
+	Decimal b = base;
+	reduct_fraction(b.numerator, b.denominator);
+	if (b.numerator.number == "1" && base.denominator.number == "1") { return one; }
 	if (exp.number == "0") { return one; }
 	if (base.numerator.number == "0") { return zero; }
 	Decimal re = base; Integer tmp = exp; tmp.positive=1;
@@ -1599,25 +1602,20 @@ Decimal wali(const Decimal& num1, const Decimal& num2)
 }
 
 void Decimal::operator=(const NumberObject& input) {
-	//denominator = input.denominator;
-	//numerator = input.numerator;
 	number = input.number;
 	positive = input.positive;
 	point_index = input.point_index;
 }
 
-Decimal Decimal::operator-()
-{
+Decimal Decimal::operator-() {
 	if (this->number != "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
 		this->positive *= -1;
 	}
 	return *this;
 }
 
-Decimal::operator Integer()
-{
+Decimal::operator Integer() {
 	Integer tmp;
-	this->number = divide(numerator, denominator);
 	string str = this->number;
 	if (str.back() == '0')
 		tmp.positive = 1;
@@ -1627,8 +1625,7 @@ Decimal::operator Integer()
 	return tmp;
 }
 
-NumberObject::NumberObject()
-{
+NumberObject::NumberObject() {
 	positive = -128;
 	number = "";
 	point_index = 0;
