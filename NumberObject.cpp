@@ -430,6 +430,7 @@ Integer power(const Integer& base, const Integer& exp) {
 	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Integer X; X.positive = 3; return X; }
 	Integer s = base, temp = exp, one; one.number = "1";
 	if (exp.number == "0" || exp.positive == -1) { Integer tmp; tmp.number = "1"; return tmp; }
+	if(base.number=="1"){return one;}
 	while (temp.number != "1") { s = s * base; temp = temp - one; }
 	return s;
 }
@@ -440,6 +441,7 @@ Integer power(const Integer& base, const Decimal& exp) {
 	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); one.numerator.number = "1"; two = one + one;
 	if (exp.numerator.number == "0") { return one; }
 	if (b.numerator.number == "0") { return zero; }
+	if (base.number == "1") { Integer L; L.number = "1"; return L; }
 	reduct_fraction(b.numerator, b.denominator);
 	reduct_fraction(e.numerator, e.denominator);
 
