@@ -716,7 +716,7 @@ Decimal operator*(const Decimal& num1, const Integer& num2) {
 	a.numerator = num1.numerator * num2;
 	a.denominator = num1.denominator;
 	a.positive = num1.positive * num2.positive;
-	reduct_fraction(a.numerator, a.denominator);
+	//reduct_fraction(a.numerator, a.denominator);
 	a.number = divide(a.numerator, a.denominator);
 	return a;
 }
@@ -747,7 +747,7 @@ Decimal operator/(const Decimal& num1, const Integer& num2) {
 	a.numerator = num1.numerator;
 	a.denominator = num1.denominator * num2;
 	a.positive = num1.positive * num2.positive;
-	reduct_fraction(a.numerator, a.denominator);
+	//reduct_fraction(a.numerator, a.denominator);
 	a.number = divide(a.numerator, a.denominator);
 	return a;
 }
@@ -930,7 +930,7 @@ Decimal operator*(const Integer& num1, const Decimal& num2) {
 	a.numerator = num1 * num2.numerator;
 	a.denominator = num2.denominator;
 	a.positive = num1.positive * num2.positive;
-	reduct_fraction(a.numerator, a.denominator);
+	//reduct_fraction(a.numerator, a.denominator);
 	a.number = divide(a.numerator, a.denominator);
 	return a;
 }
@@ -961,7 +961,7 @@ Decimal operator/(const Integer& num1, const Decimal& num2) {
 	a.numerator = num1 * num2.denominator;
 	a.denominator = num2.numerator;
 	a.positive = num1.positive * num2.positive;
-	reduct_fraction(a.numerator, a.denominator);
+	//reduct_fraction(a.numerator, a.denominator);
 	a.number = divide(a.numerator, a.denominator);
 	return a;
 }
@@ -1143,7 +1143,7 @@ Decimal operator*(const Decimal& num1, const Decimal& num2) {
 	Decimal a;
 	a.numerator = num1.numerator * num2.numerator;
 	a.denominator = num1.denominator * num2.denominator;
-	reduct_fraction(a.numerator, a.denominator);
+	//reduct_fraction(a.numerator, a.denominator);
 	a.number = divide(a.numerator, a.denominator);
 	a.positive = num1.positive * num2.positive;
 	return a;
@@ -1174,7 +1174,7 @@ Decimal operator/(const Decimal& num1, const Decimal& num2) {
 	Decimal a;
 	a.numerator = num1.numerator * num2.denominator;
 	a.denominator = num1.denominator * num2.numerator;
-	reduct_fraction(a.numerator, a.denominator);
+	//reduct_fraction(a.numerator, a.denominator);
 	a.number = divide(a.numerator, a.denominator);
 	a.positive = num1.positive * num2.positive;
 	return a;
@@ -1282,7 +1282,7 @@ Decimal power(const Decimal& base, const Decimal& exp)
 			}
 		}
 	}
-	else 
+	else
 	{
 		if (e.denominator.number == "1")
 		{
