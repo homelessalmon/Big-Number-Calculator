@@ -506,6 +506,11 @@ Decimal Big_tree_calculator::value_process(string input) {
 						break;
 					}
 				}
+				
+				while (temp_string[temp_string.length() - 1] == '0' && temp_string.length() > 1) {
+					temp_string.pop_back();
+				}
+				
 				Integer numerator;
 				numerator.number = temp_string;
 				Integer denominator;
