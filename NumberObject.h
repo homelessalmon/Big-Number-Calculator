@@ -56,7 +56,7 @@ public:
 	friend Integer operator%(const Integer&, const Integer&);
 	friend Integer gcd(const Integer&, const Integer&);
 	friend Integer lcm(const Integer&, const Integer&);
-	void operator=(const NumberObject&);
+	void operator=(const Integer&);
 	Integer operator-();
 	operator Decimal();
 };
@@ -88,7 +88,7 @@ public:
 	friend Decimal power(const Decimal& base, const Integer& exp);
 	friend Decimal power(const Decimal& base, const Decimal& exp);
 	friend void reduct_fraction(Integer&, Integer&);
-	void operator=(const NumberObject&);
+	void operator=(const Decimal&);
 	Decimal operator-();
 	operator Integer();
 };
