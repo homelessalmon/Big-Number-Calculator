@@ -4,6 +4,12 @@ using namespace std;
 
 //NumberObject
 
+void reduct_fraction(Integer& numerator, Integer& denominator) {
+	Integer A = gcd(numerator, denominator);
+	numerator = numerator / A;
+	denominator = denominator / A;
+}
+
 Decimal sub(const Decimal& n1, const Decimal& n2) {
 	if (n1.positive == -1 && n2.positive == 1) {
 		Decimal n3 = n1 + n2;
@@ -429,43 +435,61 @@ Integer power(const Integer& base, const Integer& exp) {
 }
 
 Integer power(const Integer& base, const Decimal& exp) {
-	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Integer X; X.positive = 3; return X; }
-	Decimal b, e = exp, one, two, zero; b.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + base.number;
-	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
-	if (exp.number == zero.number) { return one; }
-	if (b.number == "0") { return zero; }
-	if (exp.positive == -1) { return zero; }
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
+	Decimal b, e = exp, one, two, zero; e.positive = 1; b.numerator.number = base.number; b.number = divide(b.numerator, b.denominator);
+	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); one.numerator.number = "1"; two = one + one;
+	if (exp.numerator.number == "0") { return one; }
+	if (b.numerator.number == "0") { return zero; }
+	reduct_fraction(b.numerator, b.denominator);
+	reduct_fraction(e.numerator, e.denominator);
 
-	bool check = false;
-	for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
-	if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
-	if (check) { Decimal X; X.positive = 3; return X; }
-
-	if (exp.number[99] == '5') {
+	if (e.denominator.number == "2") {
 		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
 		e = e * two;
+
 		Decimal re = b;
 		while (e.number != one.number) {
 			re = re * base;
 			e = e - one;
 		}
 		Decimal next, now = re / two; next.number = "0";
+
 		while (next.number != now.number) {
-			next = ((now * now) + re) / (two * now);
+			next = wali(tashi(kake(now, now), re), kake(two, now));
 			swap(next, now);
+			if (now.positive != 1 && now.positive != -1) { Decimal X; X.positive = 4; return X; }
 		}
 		if (exp.positive == -1) {
-			return one / now;
+			Decimal a;
+			a.numerator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+			a.denominator.number = now.number;
+			while (a.denominator.number[a.denominator.number.length() - 1] == '0' && a.denominator.number.length() > 1)
+			{
+				a.denominator.number.pop_back();
+				a.numerator.number = "0" + a.numerator.number;
+			}
+			reduct_fraction(a.numerator, a.denominator);
+			a.number = divide(a.numerator, a.denominator);
+			return a;
 		}
 		else {
 			if (exp.positive == 1) {
-				return now;
+				Decimal a;
+				a.denominator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+				a.numerator.number = now.number;
+				while (a.numerator.number[a.numerator.number.length() - 1] == '0' && a.numerator.number.length() > 1)
+				{
+					a.numerator.number.pop_back();
+					a.denominator.number = "0" + a.denominator.number;
+				}
+				reduct_fraction(a.numerator, a.denominator);
+				a.number = divide(a.numerator, a.denominator);
+				return a;
 			}
 		}
 	}
 	else {
 		Decimal re = b;
-
 		while (e.number != one.number) {
 			re = re * base;
 			e = e - one;
@@ -479,9 +503,7 @@ Integer power(const Integer& base, const Decimal& exp) {
 			}
 		}
 	}
-
 }
-
 bool operator >(const Integer& num1, const Integer& num2) {
 	if (num2.positive > num1.positive) { return false; }
 	if (num1.number == num2.number) { return false; }
@@ -584,12 +606,6 @@ Decimal::Decimal(const Decimal& reference) {
 	number = reference.number;
 	point_index = reference.point_index;
 	positive = reference.positive;
-}
-
-void reduct_fraction(Integer& numerator, Integer& denominator) {
-	Integer A = gcd(numerator, denominator);
-	numerator = numerator / A;
-	denominator = denominator / A;
 }
 
 Decimal operator+(const Decimal& n1, const Integer& n2) {
@@ -1254,11 +1270,17 @@ Decimal factorial(const Decimal& num) {
 
 Decimal power(const Decimal& base, const Integer& exp) {
 	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
-	Decimal zero, one; zero.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+	Integer one_i; one_i.number = "1";
+	Decimal zero, one; zero.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"; one.numerator.number = "1";
 	if (exp.number == "0") { return one; }
-	if (base.number == zero.number) { return zero; }
-	Decimal re = base; Integer tmp = exp;
-	while (tmp.number != "1") { re = re * base; tmp = tmp - one; }
+	if (base.numerator.number == "0") { return zero; }
+	Decimal re = base; Integer tmp = exp; tmp.positive=1;
+	while (tmp.number != "1") 
+	{ 
+		re = re * base; 
+		tmp = tmp - one_i; 
+	}
+	re.number = divide(re.numerator, re.denominator);
 	if (exp.positive == 1) {
 		return re;
 	}
@@ -1269,37 +1291,59 @@ Decimal power(const Decimal& base, const Integer& exp) {
 	}
 }
 
-Decimal power(const Decimal& base, const Decimal& exp) {
+Decimal power(const Decimal& base, const Decimal& exp) 
+{
 	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
-	Decimal b = base, e = exp, one, two, zero;
-	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); two = one + one;
-	if (exp.number == zero.number) { return one; }
-	if (b.number == zero.number) { return zero; }
+	Decimal b = base, e = exp, one, two, zero; e.positive = 1;
+	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); one.numerator.number = "1"; two = one + one;
+	if (exp.numerator.number == "0") { return one; }
+	if (base.numerator.number == "0") { return zero; }
+	reduct_fraction(b.numerator, b.denominator);
+	reduct_fraction(e.numerator, e.denominator);
 
-	bool check = false;
-	for_each(exp.number.begin(), exp.number.begin() + 98, [&check](char n) {if (n != '0') { check = true; }});
-	if (exp.number[99] != '5' && exp.number[99] != '0') { check = true; }
-	if (check) { Decimal X; X.positive = 3; return X; }
-
-	if (exp.number[99] == '5') {
+	if (e.denominator.number=="2") {
 		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
 		e = e * two;
+
 		Decimal re = base;
 		while (e.number != one.number) {
 			re = re * base;
 			e = e - one;
 		}
 		Decimal next, now = re / two; next.number = "0";
+
 		while (next.number != now.number) {
-			next = ((now * now) + re) / (two * now);
+			next = tashi(wali(now,two),wali(re,kake(two,now)));
 			swap(next, now);
+			cout << now << endl;
+			if (now.positive != 1 && now.positive != -1) { Decimal X; X.positive = 4; return X; }
 		}
 		if (exp.positive == -1) {
-			return one / now;
+			Decimal a;
+			a.numerator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+			a.denominator.number = now.number;
+			while (a.denominator.number[a.denominator.number.length() - 1] == '0' && a.denominator.number.length() > 1)
+			{
+				a.denominator.number.pop_back();
+				a.numerator.number = "0" + a.numerator.number;
+			}
+			reduct_fraction(a.numerator, a.denominator);
+			a.number = divide(a.numerator, a.denominator);
+			return a;
 		}
 		else {
 			if (exp.positive == 1) {
-				return now;
+				Decimal a;
+				a.denominator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+				a.numerator.number = now.number;
+				while (a.numerator.number[a.numerator.number.length() - 1] == '0' && a.numerator.number.length() > 1)
+				{
+					a.numerator.number.pop_back();
+					a.denominator.number = "0" + a.denominator.number;
+				}
+				reduct_fraction(a.numerator, a.denominator);
+				a.number = divide(a.numerator, a.denominator);
+				return a;
 			}
 		}
 	}
@@ -1318,6 +1362,240 @@ Decimal power(const Decimal& base, const Decimal& exp) {
 			}
 		}
 	}
+}
+
+Decimal tashi(const Decimal& n1, const Decimal& n2)
+{
+	if ((n1.positive != 1 && n1.positive != -1) || (n2.positive != 1 && n2.positive != -1)) { Decimal X; X.positive = 4; return X; }
+	string num1 = n1.number, num2 = n2.number;
+	vector<int>ans;
+	int num1_len = num1.length(), num2_len = num2.length();
+	if (num1_len > num2_len) {
+		swap(num1, num2);
+		swap(num1_len, num2_len);
+	}
+	int carry = 0;
+	for (int i = 0; i < num2_len; i++) {
+		if (i < num1_len) {
+			int t = (num1[i] - '0') + (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num2[i] - '0') + carry;
+			if (t >= 10) {
+				carry = 1;
+				t -= 10;
+			}
+			else carry = 0;
+			ans.push_back(t);
+		}
+	}
+	if (carry == 1) ans.push_back(1);
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+	Decimal a;
+	a.number = temp;
+	a.positive = 1;
+	return a;
+}
+
+Decimal hiki(const Decimal& n1, const Decimal& n2)
+{
+	if ((n1.positive != 1 && n1.positive != -1) || (n2.positive != 1 && n2.positive != -1)) { Decimal X; X.positive = 4; return X; }
+	Decimal a;
+	string num1, num2;
+	vector<int> ans;
+	num1 = n1.number;
+	num2 = n2.number;
+	//check if the answer is positive
+	if (num1.length() > num2.length()) {}
+	else if (num2.length() > num1.length()) {
+		swap(num1, num2);
+		a.positive = -1;
+	}
+	else {
+		for (int i = num1.length() - 1; i >= 0; i--) {
+			if (num1[i] > num2[i]) {
+				break;
+			}
+			if (num1[i] < num2[i]) {
+				swap(num1, num2);
+				a.positive = -1;
+				break;
+			}
+		}
+	}
+	//substraction
+	int borrow = 0, num1_len = num1.length(), num2_len = num2.length();
+	for (int i = 0; i < num1_len; i++) {
+		if (i < num2_len) {
+			int t = (num1[i] - '0') - (num2[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+		else {
+			int t = (num1[i] - '0') + borrow;
+			if (t < 0) {
+				borrow = -1;
+				t += 10;
+			}
+			else borrow = 0;
+			ans.push_back(t);
+		}
+	}
+	//clear redundant zeros ex.1000 - 999 = 0001 -> 1
+	for (int i = ans.size() - 1; i > 0; i--) {
+		if (ans[i] != 0)
+			break;
+		ans.pop_back();
+	}
+	string temp;
+	for (int i = 0; i < ans.size(); i++) {
+		temp.append(1, (char)(ans[i] + '0'));
+	}
+	while (temp.length() < 101)
+	{
+		temp.append(1, '0');
+	}
+	a.number = temp;
+	return a;
+}
+
+Decimal kake(const Decimal& num1, const Decimal& num2)
+{
+	if ((num1.positive != 1 && num1.positive != -1) || (num2.positive != 1 && num2.positive != -1)) { Decimal X; X.positive = 4; return X; }
+	string zero = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	if (num1.number == zero || num2.number == zero) {
+		Decimal A;
+		A.number = zero;
+		A.positive = 1;
+		return A;
+	}
+	vector<Integer> list_to_plus;
+	for (int i = 0; i < num2.number.length(); i++)
+	{
+		int q = 0;
+		string temp = num1.number;
+		for (int j = 0; j < num1.number.length(); j++)
+		{
+			int c = ((temp[j] - '0') * (num2.number[i] - '0') + q) % 10;
+			q = ((temp[j] - '0') * (num2.number[i] - '0') + q) / 10;
+			temp[j] = c + '0';
+			if (j == num1.number.length() - 1 && q > 0)
+			{
+				temp.append(1, q + '0');
+			}
+		}
+		Integer A;
+		A.number = temp;
+		list_to_plus.push_back(A);
+	}
+	for (int i = 0; i < list_to_plus.size(); i++)
+	{
+		string x = "";
+		for (int j = 0; j < i; j++)
+		{
+			x.append(1, '0');
+		}
+		list_to_plus[i].number = x + list_to_plus[i].number;
+	}
+	vector<Decimal> list;
+	for (int i = 0; i < list_to_plus.size(); i++)
+	{
+		Decimal tmp;
+		tmp.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + list_to_plus[i].number;
+		list.push_back(tmp);
+	}
+	Decimal re;
+	re.number = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	for (int i = 0; i < list.size(); i++)
+	{
+		re = tashi(re,list[i]);
+	}
+	
+	re.number = re.number.substr(200);
+	re.positive = num1.positive * num2.positive;
+	
+	return re;
+}
+
+Decimal wali(const Decimal& num1, const Decimal& num2)
+{
+	if ((num1.positive != 1 && num1.positive != -1) || (num2.positive != 1 && num2.positive != -1)) { Decimal X; X.positive = 4; return X; }
+	Decimal n1 = num1, n2 = num2;
+	n1.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n1.number; n2.number = "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" + n2.number;
+	string t = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	if (num1.number == t)
+	{
+		Decimal X;
+		X.number = t;
+		return X;
+	}
+	else
+	{
+		if (num2.number == t)
+		{
+			Decimal X;
+			X.positive == 4;
+			return X;
+		}
+	}
+	while (n1.number[n1.number.length() - 1] == '0')
+	{
+		n1.number.pop_back();
+		n1.number = "0" + n1.number;
+		n2.number = "0" + n2.number;
+	}
+	while (n2.number[n2.number.length() - 1] == '0')
+	{
+		n2.number.pop_back();
+		n2.number = "0" + n2.number;
+		n1.number = "0" + n1.number;
+	}
+	while (n1.number.length() > n2.number.length())
+	{
+		t = "0" + t;
+		n2.number = "0" + n2.number;
+	}
+	for (int i = t.length() - 1; i > -1; i--)
+	{
+		int m = 0;
+		while (1)
+		{
+			Decimal A;
+			A = hiki(n1,n2);
+			if (A.positive < 0) { break; }
+			n1 = hiki(n1,n2);
+			m++;
+		}
+		t[i] = m + '0';
+		m = 0;
+		n2.number.erase(n2.number.begin());
+		if (n2.number.length() < 101) { n2.number.append(1, '0'); }
+	}
+	while (t[t.length() - 1] == '0')
+	{
+		t.pop_back();
+	}
+	while (t.length() < 101)
+	{
+		t.append(1, '0');
+	}
+	Decimal temp;
+	temp.number = t;
+	temp.positive = num1.positive * num2.positive;
+	return temp;
 }
 
 void Decimal::operator=(const NumberObject& input) {
