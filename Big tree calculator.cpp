@@ -403,7 +403,7 @@ void Big_tree_calculator::string_process(string input) {
 		else {
 			Decimal temp = value_process(input_seg[3]);
 			Integer integer;
-			integer = temp;
+			integer = (Integer)temp;
 			variableList.push_pack(input_seg[1], integer);
 		}
 	}
@@ -434,7 +434,7 @@ void Big_tree_calculator::string_process(string input) {
 			}
 			else {
 				Integer integer;
-				integer = temp;
+				integer = (Integer)temp;
 				variableList.Number_I[v] = integer;
 			}
 		}
