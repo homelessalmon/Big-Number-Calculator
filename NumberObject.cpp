@@ -543,7 +543,7 @@ Integer lcm(const Integer& num1, const Integer& num2) {
 	return re;
 }
 
-void Integer::operator=(const NumberObject& input) {
+void Integer::operator=(const Integer& input) {
 	number = input.number;
 	positive = input.positive;
 	point_index = input.point_index;
@@ -1320,7 +1320,9 @@ Decimal power(const Decimal& base, const Decimal& exp) {
 	}
 }
 
-void Decimal::operator=(const NumberObject& input) {
+void Decimal::operator=(const Decimal& input) {
+	denominator = input.denominator;
+	numerator = input.numerator;
 	number = input.number;
 	positive = input.positive;
 	point_index = input.point_index;
