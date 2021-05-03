@@ -1298,6 +1298,7 @@ Decimal power(const Decimal& base, const Decimal& exp)
 	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); one.numerator.number = "1"; two = one + one;
 	if (exp.numerator.number == "0") { return one; }
 	if (base.numerator.number == "0") { return zero; }
+	if (base.numerator.number == "1" && base.denominator.number == "1") { return one; }
 	reduct_fraction(b.numerator, b.denominator);
 	reduct_fraction(e.numerator, e.denominator);
 
