@@ -1315,7 +1315,6 @@ Decimal power(const Decimal& base, const Decimal& exp)
 		while (next.number != now.number) {
 			next = tashi(wali(now,two),wali(re,kake(two,now)));
 			swap(next, now);
-			cout << now << endl;
 			if (now.positive != 1 && now.positive != -1) { Decimal X; X.positive = 4; return X; }
 		}
 		if (exp.positive == -1) {
