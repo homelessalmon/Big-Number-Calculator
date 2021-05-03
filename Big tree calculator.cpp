@@ -601,7 +601,13 @@ Decimal Big_tree_calculator::value_process(string input) {
 			cur++;
 		}
 	}
-
+	if (formula == "d") {
+		formula = "d-d";
+		Decimal temp;
+		temp.numerator.number = "0";
+		temp.denominator.number = "1";
+		num_dec.push_back(temp);
+	}
 
 	//! :要確保前面只能是數
 	//^ :要確保前後都是數，後面可以是+-
@@ -620,7 +626,7 @@ Decimal Big_tree_calculator::value_process(string input) {
 	for (int i = 1; i < formula.size() - 1; i++) {
 		switch (formula[i]) {
 		case '!':
-			if ((formula[i - 1] != '!' && formula[i - 1] != 'i')) {
+			if ((formula[i - 1] != '!' && formula[i - 1] != 'i' && formula[i - 1] != 'd')) {
 				error.positive = 32;
 				return error;
 			}
