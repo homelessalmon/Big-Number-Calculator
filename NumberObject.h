@@ -17,6 +17,7 @@ public:
 	int positive;//positive 1,negative -1;
 	//未定義 = -128
 	/* positive等於這些數字時表示：
+	2 = 階乘定義域外，3 = 冪次定義域外，4 = 除法定義域外
 	10 = 不存在的變數
 	20 = 前括號太多，21 = 後括號太多
 	30 = 算式第一字元是非法運算子，31 = 算式最後字元是非法運算子
@@ -56,7 +57,7 @@ public:
 	friend Integer operator%(const Integer&, const Integer&);
 	friend Integer gcd(const Integer&, const Integer&);
 	friend Integer lcm(const Integer&, const Integer&);
-	void operator=(const NumberObject&);
+	//void operator=(const NumberObject&);
 	Integer operator-();
 	operator Decimal();
 };
@@ -92,7 +93,7 @@ public:
 	friend Decimal hiki(const Decimal&, const Decimal&);
 	friend Decimal tashi(const Decimal&, const Decimal&);
 	friend Decimal wali(const Decimal&, const Decimal&);
-	void operator=(const NumberObject&);
+	//void operator=(const NumberObject&);
 	Decimal operator-();
 	operator Integer();
 };
