@@ -107,12 +107,12 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 		if (pn == 0) {
 			return 1;
 		}
-		else {
+		else if (pn == -1) {
 			if (formula[i] == 'i') {
-				intlist[0].positive = intlist[0].positive * pn;
+				intlist[0] = -intlist[0];
 			}
 			else if (formula[i] == 'd') {
-				declist[0].positive = declist[0].positive * pn;
+				declist[0] = -declist[0];
 			}
 		}
 		formula.erase(0, i);
@@ -136,22 +136,24 @@ int formula_sign(string& formula, vector<Integer>& intlist, vector<Decimal>& dec
 			if (length > 0) {
 				if (formula[i + 1] == 'i') {
 					int order = order_of(formula, 'i', i + 1);
-					if (positivity(formula.substr(j + 1, length)) == 0) {
+					int pn = positivity(formula.substr(j + 1, length));
+					if (pn == 0) {
 						return 1;
 					}
-					else {
-						intlist[order].positive = intlist[order].positive * positivity(formula.substr(j + 1, length));
+					else if (pn == -1) {
+						intlist[order] = -intlist[order];
 					}
 					formula.erase(j + 1, length);
 					i = j - 1;
 				}
 				else if (formula[i + 1] == 'd') {
 					int order = order_of(formula, 'd', i + 1);
-					if (positivity(formula.substr(j + 1, length)) == 0) {
+					int pn = positivity(formula.substr(j + 1, length));
+					if (pn == 0) {
 						return 1;
 					}
-					else {
-						declist[order].positive = declist[order].positive * positivity(formula.substr(j + 1, length));
+					else if (pn == -1) {
+						declist[order] = -declist[order];
 					}
 					formula.erase(j + 1, length);
 					i = j - 1;
@@ -353,7 +355,7 @@ int formula_addsub(string& formula, vector<Integer>& intlist, vector<Decimal>& d
 
 void string_segmentation(string input, vector<string>& seg, string segflag, char packflag) {
 	int cur = 0, nextpack = 0, nextseg = 0;
-	while (nextpack != string::npos || nextseg != string::npos) {
+	while ((nextpack != string::npos || nextseg != string::npos) && cur >= 0) {
 		nextseg = input.find_first_of(segflag, cur);
 		nextpack = input.find_first_of(packflag, cur);
 		if (nextpack == string::npos || nextseg < nextpack) {
@@ -399,22 +401,13 @@ void Big_tree_calculator::string_process(string input) {
 			variableList.push_pack(input_seg[1], integer);
 		}
 		else {
-			NumberObject temp = value_process(input_seg[3]);
-			if (temp.point_index == 0) {
-				Integer integer;
-				integer = temp;
-				variableList.push_pack(input_seg[1], integer);
-			}
-			else {
-				Decimal decimal;
-				decimal = temp;
-				Integer integer;
-				integer = decimal;
-				variableList.push_pack(input_seg[1], integer);
-			}
+			Decimal temp = value_process(input_seg[3]);
+			Integer integer;
+			integer = (Integer)temp;
+			variableList.push_pack(input_seg[1], integer);
 		}
 	}
-	else if (input_seg[0] == "Decimal") {
+	else if (input_seg[0] == "Decimal" || input_seg[0] == "decimal" || input_seg[0] == "Dec" || input_seg[0] == "dec") {
 		if (input_seg.size() == 2) {
 			Decimal decimal;
 			decimal.denominator.number = "1";
@@ -433,17 +426,15 @@ void Big_tree_calculator::string_process(string input) {
 		}
 	}
 	else if (input_seg.size() > 1 && input_seg[1] == "=") {
-		NumberObject temp = value_process(input_seg[2]);
+		Decimal temp = value_process(input_seg[2]);
 		int v = variableList.find(input_seg[0]);
-		if (v >= 0 && v <= 100) {
+		if (v >= 0 && v < 100) {
 			if (temp.point_index == 0) {
 				variableList.Number_I[v] = temp;
 			}
 			else {
-				Decimal decimal;
-				decimal = temp;
 				Integer integer;
-				integer = decimal;
+				integer = (Integer)temp;
 				variableList.Number_I[v] = integer;
 			}
 		}
@@ -452,11 +443,8 @@ void Big_tree_calculator::string_process(string input) {
 				variableList.Number_D[v - 100] = temp;
 			}
 			else {
-				Integer integer;
-				integer = temp;
-				Decimal decimal;
-				decimal = integer;
-				variableList.Number_D[v - 100] = decimal;
+				temp.point_index = 1;
+				variableList.Number_D[v - 100] = temp;
 			}
 		}
 		else {
@@ -466,7 +454,14 @@ void Big_tree_calculator::string_process(string input) {
 		//將input_seg[0]的變數賦值為input_seg[2]
 	}
 	else {
-		cout << value_process(input_seg[0]) << endl;
+		Decimal os = value_process(input_seg[0]);
+		if (os.point_index == 0) {
+			Integer osi = (Decimal)os;
+			cout << osi << endl;
+		}
+		else {
+			cout << os << endl;
+		}
 	}
 	return;
 }
@@ -510,11 +505,6 @@ Decimal Big_tree_calculator::value_process(string input) {
 						temp_string.erase(point_pos, 1);
 						break;
 					}
-				}
-
-				while (temp_string[temp_string.length() - 1] == '0' && temp_string.length() > 1)
-				{
-					temp_string.pop_back();
 				}
 				Integer numerator;
 				numerator.number = temp_string;
@@ -565,7 +555,7 @@ Decimal Big_tree_calculator::value_process(string input) {
 			Decimal parenthese = value_process(input.substr(begin, length));
 			if (parenthese.point_index == 0) {
 				Integer temp;
-				temp = parenthese;
+				temp = (Integer)parenthese;
 				num_int.push_back(temp);
 				formula = formula + 'i';
 			}
@@ -590,11 +580,11 @@ Decimal Big_tree_calculator::value_process(string input) {
 			end = cur;
 			int length = end - begin;
 			int v = variableList.find(input.substr(begin, length));
-			if (v >= 0 && v <= 100) {
+			if (v >= 0 && v < 100) {
 				num_int.push_back(variableList.Number_I[v]);
 				formula = formula + 'i';
 			}
-			else if (v > 100) {
+			else if (v >= 100) {
 				num_dec.push_back(variableList.Number_D[v - 100]);
 				formula = formula + 'd';
 			}
@@ -618,7 +608,13 @@ Decimal Big_tree_calculator::value_process(string input) {
 			cur++;
 		}
 	}
-
+	if (formula == "d") {
+		formula = "d-d";
+		Decimal temp;
+		temp.numerator.number = "0";
+		temp.denominator.number = "1";
+		num_dec.push_back(temp);
+	}
 
 	//! :要確保前面只能是數
 	//^ :要確保前後都是數，後面可以是+-
@@ -637,7 +633,7 @@ Decimal Big_tree_calculator::value_process(string input) {
 	for (int i = 1; i < formula.size() - 1; i++) {
 		switch (formula[i]) {
 		case '!':
-			if ((formula[i - 1] != '!' && formula[i - 1] != 'i')) {
+			if ((formula[i - 1] != '!' && formula[i - 1] != 'i' && formula[i - 1] != 'd')) {
 				error.positive = 32;
 				return error;
 			}
@@ -718,7 +714,7 @@ Decimal Big_tree_calculator::value_process(string input) {
 
 	if (num_int.size() == 1) {
 		Decimal temp;
-		temp = num_int[0];
+		temp = (Decimal)num_int[0];
 		temp.point_index = 0;
 		return temp;
 	}
