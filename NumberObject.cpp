@@ -1228,22 +1228,22 @@ Decimal operator/(const Decimal& num1, const Decimal& num2) {
 
 Decimal factorial(const Decimal& num) {
 	if (num.positive != -1 && num.positive != 1) { Decimal X; X.positive = 2; return X; }
-	bool check = false;
-	for_each(num.number.begin(), num.number.begin() + 99, [&check](char w) {if (w != '0') { check = true; }});
-	if (check) {
-		Decimal X; X.positive = 2; return X;
-	}
-	Decimal one; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-	Decimal s = one, now = num;
-	if (num.number == "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
+	Decimal tmp = num;
+	reduct_fraction(tmp.numerator, tmp.denominator);
+	tmp.number = divide(tmp.numerator, tmp.denominator);
+	if (tmp.denominator.number != "1") { Decimal X; X.positive = 2; return X; }
+
+	Decimal one; one.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"; one.numerator.number = "1"; one.denominator.number = "1";
+	Decimal now = tmp;
+	Integer s;
+	if (num.numerator.number == "0")
+	{
 		return one;
 	}
-	while (now.number != one.number) {
-		s = s * now;
-		now = now - one;
-	}
-	return s;
+	s = factorial((Integer)now);
+	return (Decimal)s;
 }
+
 
 Decimal power(const Decimal& base, const Integer& exp) {
 	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
