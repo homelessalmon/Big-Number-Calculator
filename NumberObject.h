@@ -51,7 +51,7 @@ public:
 	friend Integer operator/(const Integer&, const Integer&);
 	friend Integer factorial(const Integer&);
 	friend Integer power(const Integer& base, const Integer& exp);
-	
+	friend Integer power(const Integer& base, const Decimal& exp);
 	friend bool operator >(const Integer&, const Integer&);
 	friend bool operator >=(const Integer&, const Integer&);
 	friend Integer operator%(const Integer&, const Integer&);
@@ -88,7 +88,6 @@ public:
 	friend Decimal factorial(const Decimal&);
 	friend Decimal power(const Decimal& base, const Integer& exp);
 	friend Decimal power(const Decimal& base, const Decimal& exp);
-	friend D power(const Integer& base, const Decimal& exp);
 	friend void reduct_fraction(Integer&, Integer&);
 	friend Decimal kake(const Decimal&, const Decimal&);
 	friend Decimal hiki(const Decimal&, const Decimal&);
