@@ -407,7 +407,7 @@ void Big_tree_calculator::string_process(string input) {
 			variableList.push_pack(input_seg[1], integer);
 		}
 	}
-	else if (input_seg[0] == "Decimal") {
+	else if (input_seg[0] == "Decimal" || input_seg[0] == "decimal" || input_seg[0] == "Dec" || input_seg[0] == "dec") {
 		if (input_seg.size() == 2) {
 			Decimal decimal;
 			decimal.denominator.number = "1";
