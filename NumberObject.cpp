@@ -489,12 +489,15 @@ bool operator >(const Integer& num1, const Integer& num2) {
 	else {
 		if (num1.number.length() > num2.number.length()) { return true; }
 		else {
-			for (int i = num1.number.length(); i > -1; i--) {
-				if (num1.number[i] < num2.number[i]) { return false; }
+			for (int i = num1.number.length()-1; i > -1; i--) {
+				if (num1.number[i] > num2.number[i]) { return true; }
+				else
+				{
+					if (num2.number[i] > num1.number[i]) { return false; }
+				}
 			}
 		}
 	}
-	return true;
 }
 
 bool operator >=(const Integer& num1, const Integer& num2) {
@@ -506,7 +509,11 @@ bool operator >=(const Integer& num1, const Integer& num2) {
 		if (num1.number.length() > num2.number.length()) { return true; }
 		else {
 			for (int i = num1.number.length() - 1; i > -1; i--) {
-				if (num1.number[i] < num2.number[i]) { return false; }
+				if (num1.number[i] > num2.number[i]) { return true; }
+				else
+				{
+					if (num2.number[i] > num1.number[i]) { return false; }
+				}
 			}
 		}
 	}
