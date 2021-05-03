@@ -1222,7 +1222,7 @@ Decimal power(const Decimal& base, const Integer& exp) {
 	}
 }
 
-Decimal power(const Decimal& base, const Decimal& exp) 
+Decimal power(const Decimal& base, const Decimal& exp)
 {
 	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
 	Decimal b = base, e = exp, one, two, zero; e.positive = 1;
@@ -1235,7 +1235,7 @@ Decimal power(const Decimal& base, const Decimal& exp)
 	b.number = divide(b.numerator, b.denominator);
 	e.number = divide(e.numerator, e.denominator);
 
-	if (e.denominator.number=="2") {
+	if (e.denominator.number == "2") {
 		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
 		e = e * two;
 
@@ -1249,7 +1249,7 @@ Decimal power(const Decimal& base, const Decimal& exp)
 		Decimal next, now = re / two; next.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 
 		while (next.number != now.number) {
-			next = tashi(wali(now,two),wali(re,kake(two,now)));
+			next = tashi(wali(now, two), wali(re, kake(two, now)));
 			swap(next, now);
 			if (now.positive != 1 && now.positive != -1) { Decimal X; X.positive = 4; return X; }
 		}
@@ -1282,19 +1282,27 @@ Decimal power(const Decimal& base, const Decimal& exp)
 			}
 		}
 	}
-	else {
-		Decimal re = base;
-		while (e.number != one.number) {
-			re = re * base;
-			e = e - one;
-		}
-		if (exp.positive == -1) {
-			return one / re;
-		}
-		else {
-			if (exp.positive == 1) {
-				return re;
+	else 
+	{
+		if (e.denominator.number == "1")
+		{
+			Decimal re = base;
+			while (e.number != one.number) {
+				re = re * base;
+				e = e - one;
 			}
+			if (exp.positive == -1) {
+				return one / re;
+			}
+			else {
+				if (exp.positive == 1) {
+					return re;
+				}
+			}
+		}
+		else
+		{
+			Decimal X; X.positive = 3; return X;
 		}
 	}
 }
@@ -1353,18 +1361,29 @@ Decimal power(const Integer& base, const Decimal& exp) {
 		}
 	}
 	else {
-		Decimal re = b;
-		while (e.number != one.number) {
-			re = re * base;
-			e = e - one;
-		}
-		if (exp.positive == -1) {
-			return one / re;
-		}
-		else {
-			if (exp.positive == 1) {
-				return re;
+		if (e.denominator.number == "1")
+		{
+			Decimal re = b;
+			while (e.number != one.number)
+			{
+				re = re * base;
+				e = e - one;
 			}
+			if (exp.positive == -1)
+			{
+				return one / re;
+			}
+			else
+			{
+				if (exp.positive == 1)
+				{
+					return re;
+				}
+			}
+		}
+		else
+		{
+			Decimal X; X.positive = 3; return X;
 		}
 	}
 }
