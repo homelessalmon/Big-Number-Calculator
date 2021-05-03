@@ -435,75 +435,7 @@ Integer power(const Integer& base, const Integer& exp) {
 	return s;
 }
 
-Integer power(const Integer& base, const Decimal& exp) {
-	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
-	Decimal b, e = exp, one, two, zero; e.positive = 1; b.numerator.number = base.number; b.number = divide(b.numerator, b.denominator);
-	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); one.numerator.number = "1"; two = one + one;
-	if (exp.numerator.number == "0") { return one; }
-	if (b.numerator.number == "0") { return zero; }
-	if (base.number == "1") { Integer L; L.number = "1"; return L; }
-	reduct_fraction(b.numerator, b.denominator);
-	reduct_fraction(e.numerator, e.denominator);
 
-	if (e.denominator.number == "2") {
-		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
-		e = e * two;
-
-		Decimal re = b;
-		while (e.number != one.number) {
-			re = re * base;
-			e = e - one;
-		}
-		Decimal next, now = re / two; next.number = "0";
-
-		while (next.number != now.number) {
-			next = wali(tashi(kake(now, now), re), kake(two, now));
-			swap(next, now);
-			if (now.positive != 1 && now.positive != -1) { Decimal X; X.positive = 4; return X; }
-		}
-		if (exp.positive == -1) {
-			Decimal a;
-			a.numerator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-			a.denominator.number = now.number;
-			while (a.denominator.number[a.denominator.number.length() - 1] == '0' && a.denominator.number.length() > 1) {
-				a.denominator.number.pop_back();
-				a.numerator.number = "0" + a.numerator.number;
-			}
-			reduct_fraction(a.numerator, a.denominator);
-			a.number = divide(a.numerator, a.denominator);
-			return a;
-		}
-		else {
-			if (exp.positive == 1) {
-				Decimal a;
-				a.denominator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
-				a.numerator.number = now.number;
-				while (a.numerator.number[a.numerator.number.length() - 1] == '0' && a.numerator.number.length() > 1) {
-					a.numerator.number.pop_back();
-					a.denominator.number = "0" + a.denominator.number;
-				}
-				reduct_fraction(a.numerator, a.denominator);
-				a.number = divide(a.numerator, a.denominator);
-				return a;
-			}
-		}
-	}
-	else {
-		Decimal re = b;
-		while (e.number != one.number) {
-			re = re * base;
-			e = e - one;
-		}
-		if (exp.positive == -1) {
-			return one / re;
-		}
-		else {
-			if (exp.positive == 1) {
-				return re;
-			}
-		}
-	}
-}
 
 bool operator >(const Integer& num1, const Integer& num2) {
 	if (num2.positive > num1.positive) { return false; }
@@ -1345,6 +1277,76 @@ Decimal power(const Decimal& base, const Decimal& exp) {
 	}
 	else {
 		Decimal re = base;
+		while (e.number != one.number) {
+			re = re * base;
+			e = e - one;
+		}
+		if (exp.positive == -1) {
+			return one / re;
+		}
+		else {
+			if (exp.positive == 1) {
+				return re;
+			}
+		}
+	}
+}
+
+Decimal power(const Integer& base, const Decimal& exp) {
+	if ((base.positive != 1 && base.positive != -1) || (exp.positive != 1 && exp.positive != -1)) { Decimal X; X.positive = 3; return X; }
+	Decimal b, e = exp, one, two, zero; e.positive = 1; b.numerator.number = base.number; b.number = divide(b.numerator, b.denominator);
+	zero.number.insert(0, 101, '0'); one.number.insert(0, 100, '0'); one.number.append(1, '1'); one.numerator.number = "1"; two = one + one;
+	if (exp.numerator.number == "0") { return one; }
+	if (b.numerator.number == "0") { return zero; }
+	if (base.number == "1") { Integer L; L.number = "1"; return L; }
+	reduct_fraction(b.numerator, b.denominator);
+	reduct_fraction(e.numerator, e.denominator);
+
+	if (e.denominator.number == "2") {
+		if (base.positive == -1) { Decimal X; X.positive = 3; return X; }
+		e = e * two;
+
+		Decimal re = b;
+		while (e.number != one.number) {
+			re = re * base;
+			e = e - one;
+		}
+		Decimal next, now = re / two; next.number = "0";
+
+		while (next.number != now.number) {
+			next = wali(tashi(kake(now, now), re), kake(two, now));
+			swap(next, now);
+			if (now.positive != 1 && now.positive != -1) { Decimal X; X.positive = 4; return X; }
+		}
+		if (exp.positive == -1) {
+			Decimal a;
+			a.numerator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+			a.denominator.number = now.number;
+			while (a.denominator.number[a.denominator.number.length() - 1] == '0' && a.denominator.number.length() > 1) {
+				a.denominator.number.pop_back();
+				a.numerator.number = "0" + a.numerator.number;
+			}
+			reduct_fraction(a.numerator, a.denominator);
+			a.number = divide(a.numerator, a.denominator);
+			return a;
+		}
+		else {
+			if (exp.positive == 1) {
+				Decimal a;
+				a.denominator.number = "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
+				a.numerator.number = now.number;
+				while (a.numerator.number[a.numerator.number.length() - 1] == '0' && a.numerator.number.length() > 1) {
+					a.numerator.number.pop_back();
+					a.denominator.number = "0" + a.denominator.number;
+				}
+				reduct_fraction(a.numerator, a.denominator);
+				a.number = divide(a.numerator, a.denominator);
+				return a;
+			}
+		}
+	}
+	else {
+		Decimal re = b;
 		while (e.number != one.number) {
 			re = re * base;
 			e = e - one;
