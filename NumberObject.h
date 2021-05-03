@@ -87,6 +87,10 @@ public:
 	friend Decimal factorial(const Decimal&);
 	friend Decimal power(const Decimal& base, const Integer& exp);
 	friend Decimal power(const Decimal& base, const Decimal& exp);
+	friend Decimal kake(const Decimal&, const Decimal&);
+	friend Decimal hiki(const Decimal&, const Decimal&);
+	friend Decimal tashi(const Decimal&, const Decimal&);
+	friend Decimal wali(const Decimal&, const Decimal&);
 	friend void reduct_fraction(Integer&, Integer&);
 	void operator=(const NumberObject&);
 	Decimal operator-();
