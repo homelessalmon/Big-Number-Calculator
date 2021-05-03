@@ -566,11 +566,11 @@ Integer lcm(const Integer& num1, const Integer& num2) {
 	return re;
 }
 
-void Integer::operator=(const NumberObject& input) {
+/*void Integer::operator=(const NumberObject& input) {
 	number = input.number;
 	positive = input.positive;
 	point_index = input.point_index;
-}
+}*/
 
 Integer Integer::operator-() {
 	if (this->number != "0") {
@@ -1601,11 +1601,11 @@ Decimal wali(const Decimal& num1, const Decimal& num2)
 	return temp;
 }
 
-void Decimal::operator=(const NumberObject& input) {
+/*void Decimal::operator=(const NumberObject& input) {
 	number = input.number;
 	positive = input.positive;
 	point_index = input.point_index;
-}
+}*/
 
 Decimal Decimal::operator-() {
 	if (this->number != "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
@@ -1615,13 +1615,17 @@ Decimal Decimal::operator-() {
 }
 
 Decimal::operator Integer() {
+	//Integer tmp;
+	//this->number = divide(numerator, denominator);
+	//string str = this->number;
+	//if (str.back() == '0')
+	//	tmp.positive = 1;
+	//else
+	//	tmp.positive = this->positive;
+	//tmp.number = str.substr(100);
+	//return tmp;
 	Integer tmp;
-	string str = this->number;
-	if (str.back() == '0')
-		tmp.positive = 1;
-	else
-		tmp.positive = this->positive;
-	tmp.number = str.substr(100);
+	tmp = numerator / denominator;
 	return tmp;
 }
 
